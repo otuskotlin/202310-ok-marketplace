@@ -15,7 +15,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-actuator") // info; refresh; springMvc output
     implementation("org.springframework.boot:spring-boot-starter-webflux") // Controller, Service, etc..
-    // implementation("org.springframework.boot:spring-boot-starter-websocket") // Controller, Service, etc..
+    implementation("org.springframework.boot:spring-boot-starter-websocket") // Controller, Service, etc..
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:$springdocOpenapiUiVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin") // from models to json and Vice versa
     implementation("org.jetbrains.kotlin:kotlin-reflect") // for spring-boot app
