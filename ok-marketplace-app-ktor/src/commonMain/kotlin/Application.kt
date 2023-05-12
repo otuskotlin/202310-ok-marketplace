@@ -7,13 +7,17 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2Mapper
+import ru.otus.otuskotlin.marketplace.app.ktor.base.KtorWsSessionRepo
 import ru.otus.otuskotlin.marketplace.app.ktor.v2.v2Ad
+import ru.otus.otuskotlin.marketplace.app.ktor.v2.wsHandlerV2
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 
-//fun main(args: Array<String>) = io.ktor.server.cio.EngineMain.main(args)
-
-fun Application.module(processor: MkplAdProcessor = MkplAdProcessor()) {
+fun Application.module(
+    processor: MkplAdProcessor = MkplAdProcessor(),
+    wsRepo: KtorWsSessionRepo = KtorWsSessionRepo()
+) {
     install(CORS) {
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Put)
@@ -24,6 +28,7 @@ fun Application.module(processor: MkplAdProcessor = MkplAdProcessor()) {
         allowCredentials = true
         anyHost() // TODO remove
     }
+    install(WebSockets)
 
     routing {
         get("/") {
@@ -34,6 +39,9 @@ fun Application.module(processor: MkplAdProcessor = MkplAdProcessor()) {
                 json(apiV2Mapper)
             }
             v2Ad(processor)
+            webSocket("/ws") {
+                wsHandlerV2(processor, wsRepo)
+            }
         }
     }
 }

@@ -5,11 +5,12 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
+@Suppress("unused")
 @Configuration
 @EnableWebSocket
 class WebSocketConfigV2(val handlerV2: WsAdHandlerV2) : WebSocketConfigurer {
 
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
-        registry.addHandler(handlerV2, "/ws/v2").setAllowedOrigins("*")
+        registry.addHandler(handlerV2, "/v2/ws").setAllowedOrigins("*")
     }
 }
