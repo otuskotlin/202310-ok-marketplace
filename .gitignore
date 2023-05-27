@@ -9,3 +9,5 @@
 /.idea/
 
 /kotlin-js-store
+
+/deploy/keycloak/hsperfdata_jboss
