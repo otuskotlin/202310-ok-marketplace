@@ -1,0 +1,10 @@
+# Конфигурация для spring + (в перспективе) postgresql
+
+version: '3'
+services:
+  app-wiremock:
+    image: wiremock/wiremock:2.35.0
+    volumes:
+      - ./data:/home/wiremock
+    ports:
+      - "8080:8080"
