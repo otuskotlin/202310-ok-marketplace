@@ -3,9 +3,7 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 import kotlin.test.assertEquals
 
-class ConstValue(
-    private val value: Int
-) : ReadWriteProperty<Any?, Int> {
+class ConstValue(private val value: Int) : ReadWriteProperty<Any?, Int> {
     override fun getValue(thisRef: Any?, property: KProperty<*>): Int {
         return value
     }

@@ -3,8 +3,9 @@ import org.junit.Test
 class ObjectsExample {
     companion object {
         init {
-            println("companion inited") // инициализация при загрузке класса ObjectsExample
+            println("companion inited") // init when ObjectsExample will be loaded
         }
+
         fun doSmth() {
             println("companion object")
         }
@@ -12,8 +13,9 @@ class ObjectsExample {
 
     object A {
         init {
-            println("A inited") // ленивая инициализация при первом обращении к А
+            println("A inited") // lazy init whet getting A first time
         }
+
         fun doSmth() {
             println("object A")
         }

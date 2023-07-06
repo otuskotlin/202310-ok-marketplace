@@ -1,12 +1,10 @@
-import kotlin.test.Test
-import kotlin.test.assertEquals
-
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-class Cash
-constructor(
+class Cash(
     val amount: BigDecimal,
     val currency: Currency
 ) {
