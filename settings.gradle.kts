@@ -12,3 +12,4 @@ pluginManagement {
 include("m1l1-quickstart")
 include("m1l2-basic")
 include("m1l3-oop")
+include("m1l4-dsl")
