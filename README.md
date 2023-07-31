@@ -21,6 +21,8 @@ Marketplace -- это площадка, на которой пользовате
    4. [Анализ экономики](./docs/01-marketing/04-economy.md)
    5. [Пользовательские истории](./docs/01-marketing/05-user-stories.md)
 2. DevOps
+   1. [Схема инфраструктуры](./docs/02-devops/01-infrastruture.md)
+   2. [Схема мониторинга](./docs/02-devops/02-monitoring.md)
 3. Тесты
 4. Архитектура
 
