@@ -5,11 +5,17 @@ pluginManagement {
     val kotestVersion: String by settings
     val openapiVersion: String by settings
     val cwpGeneratorVersioin: String by settings
+    val springframeworkBootVersion: String by settings
+    val springDependencyManagementVersion: String by settings
 
     plugins {
         kotlin("jvm") version kotlinVersion
         kotlin("multiplatform") version kotlinVersion
         kotlin("plugin.serialization") version kotlinVersion apply false
+
+        id("org.springframework.boot") version springframeworkBootVersion apply false
+        id("io.spring.dependency-management") version springDependencyManagementVersion apply false
+        kotlin("plugin.spring") version kotlinVersion apply false
 
         id("io.kotest.multiplatform") version kotestVersion apply false
         id("org.openapi.generator") version openapiVersion apply false
@@ -39,3 +45,5 @@ include("ok-marketplace-mappers-v2")
 include("ok-marketplace-stubs")
 
 include("ok-marketplace-biz")
+
+include("ok-marketplace-app-spring")
