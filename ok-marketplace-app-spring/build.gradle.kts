@@ -6,6 +6,10 @@ plugins {
     kotlin("plugin.serialization")
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
     val kotestVersion: String by project
     val springdocOpenapiUiVersion: String by project
@@ -28,6 +32,7 @@ dependencies {
 
     // Внутренние модели
     implementation(project(":ok-marketplace-common"))
+    implementation(project(":ok-marketplace-app-common"))
 
     // v1 api
     implementation(project(":ok-marketplace-api-v1-jackson"))
@@ -43,6 +48,7 @@ dependencies {
     // tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+    testImplementation(kotlin("test-junit5"))
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux") // Controller, Service, etc..
     testImplementation("com.ninja-squad:springmockk:$springmockkVersion") // mockking beans

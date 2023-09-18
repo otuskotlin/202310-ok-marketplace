@@ -71,6 +71,7 @@ kotlin {
                 implementation(ktorServer("websockets"))
 
                 implementation(project(":ok-marketplace-common"))
+                implementation(project(":ok-marketplace-app-common"))
                 implementation(project(":ok-marketplace-biz"))
 
                 // v2 api

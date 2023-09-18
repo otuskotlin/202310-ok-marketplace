@@ -34,7 +34,7 @@ class V2AdStubApiTest {
             contentType(ContentType.Application.Json)
             setBody(requestObj)
         }
-        val responseObj = response.body<AdCreateResponse>()
+        val responseObj = response.body<IResponse>() as AdCreateResponse
         assertEquals(200, response.status.value)
         assertEquals("666", responseObj.ad?.id)
     }
@@ -53,7 +53,7 @@ class V2AdStubApiTest {
             contentType(ContentType.Application.Json)
             setBody(requestObj)
         }
-        val responseObj = response.body<AdReadResponse>()
+        val responseObj = response.body<IResponse>() as AdReadResponse
         assertEquals(200, response.status.value)
         assertEquals("666", responseObj.ad?.id)
     }
@@ -78,7 +78,7 @@ class V2AdStubApiTest {
             contentType(ContentType.Application.Json)
             setBody(requestObj)
         }
-        val responseObj = response.body<AdUpdateResponse>()
+        val responseObj = response.body<IResponse>() as AdUpdateResponse
         assertEquals(200, response.status.value)
         assertEquals("666", responseObj.ad?.id)
     }
@@ -100,7 +100,7 @@ class V2AdStubApiTest {
             contentType(ContentType.Application.Json)
             setBody(requestObj)
         }
-        val responseObj = response.body<AdDeleteResponse>()
+        val responseObj = response.body<IResponse>() as AdDeleteResponse
         assertEquals(200, response.status.value)
         assertEquals("666", responseObj.ad?.id)
     }
@@ -119,7 +119,7 @@ class V2AdStubApiTest {
             contentType(ContentType.Application.Json)
             setBody(requestObj)
         }
-        val responseObj = response.body<AdSearchResponse>()
+        val responseObj = response.body<IResponse>() as AdSearchResponse
         assertEquals(200, response.status.value)
         assertEquals("d-666-01", responseObj.ads?.first()?.id)
     }
@@ -140,7 +140,7 @@ class V2AdStubApiTest {
             contentType(ContentType.Application.Json)
             setBody(requestObj)
         }
-        val responseObj = response.body<AdOffersResponse>()
+        val responseObj = response.body<IResponse>() as AdOffersResponse
         assertEquals(200, response.status.value)
         assertEquals("s-666-01", responseObj.ads?.first()?.id)
     }

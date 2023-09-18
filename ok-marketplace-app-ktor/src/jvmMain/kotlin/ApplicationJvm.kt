@@ -11,18 +11,16 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import org.slf4j.event.Level
 import ru.otus.otuskotlin.marketplace.api.v1.apiV1Mapper
-import ru.otus.otuskotlin.marketplace.app.ktor.base.KtorWsSessionRepo
 import ru.otus.otuskotlin.marketplace.app.ktor.v1.v1Ad
 import ru.otus.otuskotlin.marketplace.app.ktor.v1.wsHandlerV1
-import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.app.plugins.initAppSettings
 
 // function with config (application.conf)
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
 fun Application.moduleJvm(
-    processor: MkplAdProcessor = MkplAdProcessor(),
-    wsRepo: KtorWsSessionRepo = KtorWsSessionRepo()
+    appSettings: MkplAppSettings = initAppSettings(),
 ) {
     install(CachingHeaders)
     install(DefaultHeaders)
@@ -30,7 +28,7 @@ fun Application.moduleJvm(
     install(CallLogging) {
         level = Level.INFO
     }
-    module(processor = processor, wsRepo)
+    module(appSettings)
 
     routing {
         route("v1") {
@@ -41,9 +39,9 @@ fun Application.moduleJvm(
                 }
             }
 
-            v1Ad(processor)
+            v1Ad(appSettings)
             webSocket("/ws") {
-                wsHandlerV1(processor, wsRepo)
+                wsHandlerV1(appSettings)
             }
         }
     }

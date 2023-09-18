@@ -1,8 +1,7 @@
 package ru.otus.otuskotlin.markeplace.springapp.api.v1.controller
 
 import io.kotest.common.runBlocking
-import jakarta.websocket.ContainerProvider
-import jakarta.websocket.WebSocketContainer
+import jakarta.websocket.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -19,18 +18,19 @@ import java.net.URI
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class WsControllerV1Test {
+@Suppress("unused")
+class WsControllerTest {
 
     @LocalServerPort
     private var port: Int = 0
 
     private lateinit var container: WebSocketContainer
-    private lateinit var client: TestWebSocketV1Client
+    private lateinit var client: TestWebSocketClient
 
     @BeforeEach
     fun setup() {
         container = ContainerProvider.getWebSocketContainer()
-        client = TestWebSocketV1Client()
+        client = TestWebSocketClient()
     }
 
     @Test
@@ -56,3 +56,31 @@ class WsControllerV1Test {
     }
 }
 
+@Suppress("unused", "UNUSED_PARAMETER")
+@ClientEndpoint
+class TestWebSocketClient {
+    var session: Session? = null
+    private val messages: MutableList<String> = mutableListOf()
+
+    @OnOpen
+    fun onOpen(session: Session?) {
+        this.session = session
+    }
+
+    @OnClose
+    fun onClose(session: Session?, reason: CloseReason) {
+        this.session = null
+    }
+
+    @OnMessage
+    fun onMessage(message: String) {
+        messages.add(message)
+    }
+
+    suspend fun receive(): String {
+        while (messages.isEmpty()) {
+            delay(100)
+        }
+        return messages.removeFirst()
+    }
+}

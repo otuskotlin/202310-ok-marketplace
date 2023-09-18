@@ -9,14 +9,12 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2Mapper
-import ru.otus.otuskotlin.marketplace.app.ktor.base.KtorWsSessionRepo
 import ru.otus.otuskotlin.marketplace.app.ktor.v2.v2Ad
 import ru.otus.otuskotlin.marketplace.app.ktor.v2.wsHandlerV2
-import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.app.plugins.initAppSettings
 
 fun Application.module(
-    processor: MkplAdProcessor = MkplAdProcessor(),
-    wsRepo: KtorWsSessionRepo = KtorWsSessionRepo()
+    appSettings: MkplAppSettings = initAppSettings()
 ) {
     install(CORS) {
         allowMethod(HttpMethod.Options)
@@ -38,9 +36,9 @@ fun Application.module(
             install(ContentNegotiation) {
                 json(apiV2Mapper)
             }
-            v2Ad(processor)
+            v2Ad(appSettings)
             webSocket("/ws") {
-                wsHandlerV2(processor, wsRepo)
+                wsHandlerV2(appSettings)
             }
         }
     }

@@ -1,53 +1,33 @@
 package ru.otus.otuskotlin.markeplace.springapp.api.v2.controller
 
 import org.springframework.web.bind.annotation.*
+import ru.otus.otuskotlin.markeplace.springapp.models.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
-import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
-import ru.otus.otuskotlin.marketplace.common.MkplContext
-import ru.otus.otuskotlin.marketplace.mappers.v2.*
 
 @Suppress("unused")
 @RestController
 @RequestMapping("v2/ad")
-class AdControllerV2(private val processor: MkplAdProcessor) {
+class AdControllerV2(
+    private val appSettings: MkplAppSettings
+) {
 
     @PostMapping("create")
-    suspend fun createAd(@RequestBody request: AdCreateRequest): AdCreateResponse {
-        val context = MkplContext()
-        context.fromTransport(request)
-        processor.exec(context)
-        return context.toTransportCreate()
-    }
+    suspend fun createAd(@RequestBody request: AdCreateRequest): AdCreateResponse =
+        processV2(appSettings, request = request)
 
     @PostMapping("read")
-    suspend fun readAd(@RequestBody request: AdReadRequest): AdReadResponse {
-        val context = MkplContext()
-        context.fromTransport(request)
-        processor.exec(context)
-        return context.toTransportRead()
-    }
+    suspend fun  readAd(@RequestBody request: AdReadRequest): AdReadResponse =
+        processV2(appSettings, request = request)
 
-    @PostMapping("update")
-    suspend fun updateAd(@RequestBody request: AdUpdateRequest): AdUpdateResponse {
-        val context = MkplContext()
-        context.fromTransport(request)
-        processor.exec(context)
-        return context.toTransportUpdate()
-    }
+    @RequestMapping("update", method = [RequestMethod.POST])
+    suspend fun  updateAd(@RequestBody request: AdUpdateRequest): AdUpdateResponse =
+        processV2(appSettings, request = request)
 
     @PostMapping("delete")
-    suspend fun deleteAd(@RequestBody request: AdDeleteRequest): AdDeleteResponse {
-        val context = MkplContext()
-        context.fromTransport(request)
-        processor.exec(context)
-        return context.toTransportDelete()
-    }
+    suspend fun  deleteAd(@RequestBody request: AdDeleteRequest): AdDeleteResponse =
+        processV2(appSettings, request = request)
 
     @PostMapping("search")
-    suspend fun searchAd(@RequestBody request: AdSearchRequest): AdSearchResponse {
-        val context = MkplContext()
-        context.fromTransport(request)
-        processor.exec(context)
-        return context.toTransportSearch()
-    }
+    suspend fun  searchAd(@RequestBody request: AdSearchRequest): AdSearchResponse =
+        processV2(appSettings, request = request)
 }
