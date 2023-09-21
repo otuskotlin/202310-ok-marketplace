@@ -3,6 +3,7 @@ package ru.otus.otuskotlin.marketplace.app.plugins
 import io.ktor.server.application.*
 import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.ktor.base.KtorWsSessionRepo
+import ru.otus.otuskotlin.marketplace.app.ktor.plugins.getLoggerProviderConf
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 
@@ -13,6 +14,7 @@ fun Application.initAppSettings(): MkplAppSettings {
         processor = MkplAdProcessor(),
         corSettings = MkplCorSettings(
             wsSessions = KtorWsSessionRepo(),
+            loggerProvider = getLoggerProviderConf(),
         ),
     )
 }

@@ -6,6 +6,8 @@ import ru.otus.otuskotlin.markeplace.springapp.base.SpringWsSessionRepo
 import ru.otus.otuskotlin.markeplace.springapp.models.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
+import ru.otus.otuskotlin.marketplace.logging.common.MpLoggerProvider
+import ru.otus.otuskotlin.marketplace.logging.jvm.mpLoggerLogback
 
 @Suppress("unused")
 @Configuration
@@ -14,8 +16,12 @@ class CorConfig {
     fun processor() = MkplAdProcessor()
 
     @Bean
+    fun loggerProvider(): MpLoggerProvider = MpLoggerProvider { mpLoggerLogback(it) }
+
+    @Bean
     fun corSettings() = MkplCorSettings(
         wsSessions = wsRepo(),
+        loggerProvider = loggerProvider(),
     )
 
     @Bean
