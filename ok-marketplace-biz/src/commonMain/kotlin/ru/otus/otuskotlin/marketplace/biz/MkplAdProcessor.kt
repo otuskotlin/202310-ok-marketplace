@@ -1,34 +1,75 @@
 package ru.otus.otuskotlin.marketplace.biz
 
+import ru.otus.otuskotlin.marketplace.biz.groups.operation
+import ru.otus.otuskotlin.marketplace.biz.groups.stubs
+import ru.otus.otuskotlin.marketplace.biz.workers.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
+import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
-import ru.otus.otuskotlin.marketplace.common.models.MkplDealSide
-import ru.otus.otuskotlin.marketplace.common.models.MkplState
-import ru.otus.otuskotlin.marketplace.common.models.MkplWorkMode
-import ru.otus.otuskotlin.marketplace.stubs.MkplAdStub
+import ru.otus.otuskotlin.marketplace.cor.rootChain
 
-@Suppress("RedundantSuspendModifier")
-class MkplAdProcessor {
-    @Suppress("RedundantSuspendModifier")
-    suspend fun exec(ctx: MkplContext) {
-        // TODO: Rewrite temporary stub solution with BIZ
-        require(ctx.workMode == MkplWorkMode.STUB || ctx.command in arrayOf(MkplCommand.INIT, MkplCommand.FINISH)) {
-            "Currently working only in STUB mode."
-        }
+class MkplAdProcessor(
+    @Suppress("unused")
+    private val corSettings: MkplCorSettings = MkplCorSettings.NONE
+) {
+    suspend fun exec(ctx: MkplContext) = BusinessChain.exec(ctx.also { it.corSettings = corSettings })
 
-        if (ctx.state == MkplState.NONE) ctx.state = MkplState.RUNNING
-        when (ctx.command) {
-            MkplCommand.SEARCH -> {
-                ctx.adsResponse.addAll(MkplAdStub.prepareSearchList("Болт", MkplDealSide.DEMAND))
+    companion object {
+        private val BusinessChain = rootChain<MkplContext> {
+            initStatus("Инициализация статуса")
+
+            operation("Создание объявления", MkplCommand.CREATE) {
+                stubs("Обработка стабов") {
+                    stubCreateSuccess("Имитация успешной обработки")
+                    stubValidationBadTitle("Имитация ошибки валидации заголовка")
+                    stubValidationBadDescription("Имитация ошибки валидации описания")
+                    stubDbError("Имитация ошибки работы с БД")
+                    stubNoCase("Ошибка: запрошенный стаб недопустим")
+                }
             }
-
-            MkplCommand.OFFERS -> {
-                ctx.adsResponse.addAll(MkplAdStub.prepareOffersList("Болт", MkplDealSide.SUPPLY))
+            operation("Получить объявление", MkplCommand.READ) {
+                stubs("Обработка стабов") {
+                    stubReadSuccess("Имитация успешной обработки")
+                    stubValidationBadId("Имитация ошибки валидации id")
+                    stubDbError("Имитация ошибки работы с БД")
+                    stubNoCase("Ошибка: запрошенный стаб недопустим")
+                }
             }
-
-            else -> {
-                ctx.adResponse = MkplAdStub.get()
+            operation("Изменить объявление", MkplCommand.UPDATE) {
+                stubs("Обработка стабов") {
+                    stubUpdateSuccess("Имитация успешной обработки")
+                    stubValidationBadId("Имитация ошибки валидации id")
+                    stubValidationBadTitle("Имитация ошибки валидации заголовка")
+                    stubValidationBadDescription("Имитация ошибки валидации описания")
+                    stubDbError("Имитация ошибки работы с БД")
+                    stubNoCase("Ошибка: запрошенный стаб недопустим")
+                }
             }
-        }
+            operation("Удалить объявление", MkplCommand.DELETE) {
+                stubs("Обработка стабов") {
+                    stubDeleteSuccess("Имитация успешной обработки")
+                    stubValidationBadId("Имитация ошибки валидации id")
+                    stubDbError("Имитация ошибки работы с БД")
+                    stubNoCase("Ошибка: запрошенный стаб недопустим")
+                }
+            }
+            operation("Поиск объявлений", MkplCommand.SEARCH) {
+                stubs("Обработка стабов") {
+                    stubSearchSuccess("Имитация успешной обработки")
+                    stubValidationBadId("Имитация ошибки валидации id")
+                    stubDbError("Имитация ошибки работы с БД")
+                    stubNoCase("Ошибка: запрошенный стаб недопустим")
+                }
+
+            }
+            operation("Поиск подходящих предложений для объявления", MkplCommand.OFFERS) {
+                stubs("Обработка стабов") {
+                    stubOffersSuccess("Имитация успешной обработки")
+                    stubValidationBadId("Имитация ошибки валидации id")
+                    stubDbError("Имитация ошибки работы с БД")
+                    stubNoCase("Ошибка: запрошенный стаб недопустим")
+                }
+            }
+        }.build()
     }
 }

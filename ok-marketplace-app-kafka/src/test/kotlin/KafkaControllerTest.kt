@@ -42,7 +42,7 @@ class KafkaControllerTest {
                     apiV1RequestSerialize(AdCreateRequest(
                         requestId = "11111111-1111-1111-1111-111111111111",
                         ad = AdCreateObject(
-                            title = "Some Ad",
+                            title = "Требуется болт",
                             description = "some testing ad to check them all",
                             visibility = AdVisibility.OWNER_ONLY,
                             adType = DealSide.DEMAND
