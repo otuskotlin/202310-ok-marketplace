@@ -39,6 +39,7 @@ pluginManagement {
 //include("m1l6-flows")
 //include("m1l7-kmp")
 //include("m2l3-testing")
+include("m4l4-konform")
 
 include("ok-marketplace-acceptance")
 
