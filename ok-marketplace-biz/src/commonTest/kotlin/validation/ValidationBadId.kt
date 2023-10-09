@@ -1,25 +1,22 @@
-package ru.otus.otuskotlin.marketplace.biz.validation
+package validation
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
-import ru.otus.otuskotlin.marketplace.stubs.MkplAdStub
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-private val stub = MkplAdStub.get()
-
 @OptIn(ExperimentalCoroutinesApi::class)
-fun validationDescriptionCorrect(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+fun validationIdCorrect(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
-            id = stub.id,
+            id = MkplAdId("123-234-abc-ABC"),
             title = "abc",
             description = "abc",
             adType = MkplDealSide.DEMAND,
@@ -29,19 +26,18 @@ fun validationDescriptionCorrect(command: MkplCommand, processor: MkplAdProcesso
     processor.exec(ctx)
     assertEquals(0, ctx.errors.size)
     assertNotEquals(MkplState.FAILING, ctx.state)
-    assertEquals("abc", ctx.adValidated.description)
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun validationDescriptionTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+fun validationIdTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
-            id = stub.id,
+            id = MkplAdId(" \n\t 123-234-abc-ABC \n\t "),
             title = "abc",
-            description = " \n\tabc \n\t",
+            description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -49,19 +45,18 @@ fun validationDescriptionTrim(command: MkplCommand, processor: MkplAdProcessor) 
     processor.exec(ctx)
     assertEquals(0, ctx.errors.size)
     assertNotEquals(MkplState.FAILING, ctx.state)
-    assertEquals("abc", ctx.adValidated.description)
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun validationDescriptionEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+fun validationIdEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
-            id = stub.id,
+            id = MkplAdId(""),
             title = "abc",
-            description = "",
+            description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -70,20 +65,20 @@ fun validationDescriptionEmpty(command: MkplCommand, processor: MkplAdProcessor)
     assertEquals(1, ctx.errors.size)
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
-    assertEquals("description", error?.field)
-    assertContains(error?.message ?: "", "description")
+    assertEquals("id", error?.field)
+    assertContains(error?.message ?: "", "id")
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun validationDescriptionSymbols(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+fun validationIdFormat(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
-            id = stub.id,
+            id = MkplAdId("!@#\$%^&*(),.{}"),
             title = "abc",
-            description = "!@#$%^&*(),.{}",
+            description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -92,6 +87,6 @@ fun validationDescriptionSymbols(command: MkplCommand, processor: MkplAdProcesso
     assertEquals(1, ctx.errors.size)
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
-    assertEquals("description", error?.field)
-    assertContains(error?.message ?: "", "description")
+    assertEquals("id", error?.field)
+    assertContains(error?.message ?: "", "id")
 }

@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.biz.validation
+package validation
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -13,7 +13,7 @@ import kotlin.test.assertNotEquals
 private val stub = MkplAdStub.get()
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun validationTitleCorrect(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+fun validationDescriptionCorrect(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
         state = MkplState.NONE,
@@ -29,19 +29,19 @@ fun validationTitleCorrect(command: MkplCommand, processor: MkplAdProcessor) = r
     processor.exec(ctx)
     assertEquals(0, ctx.errors.size)
     assertNotEquals(MkplState.FAILING, ctx.state)
-    assertEquals("abc", ctx.adValidated.title)
+    assertEquals("abc", ctx.adValidated.description)
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun validationTitleTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+fun validationDescriptionTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
             id = stub.id,
-            title = " \n\t abc \t\n ",
-            description = "abc",
+            title = "abc",
+            description = " \n\tabc \n\t",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -49,19 +49,19 @@ fun validationTitleTrim(command: MkplCommand, processor: MkplAdProcessor) = runT
     processor.exec(ctx)
     assertEquals(0, ctx.errors.size)
     assertNotEquals(MkplState.FAILING, ctx.state)
-    assertEquals("abc", ctx.adValidated.title)
+    assertEquals("abc", ctx.adValidated.description)
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun validationTitleEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+fun validationDescriptionEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
             id = stub.id,
-            title = "",
-            description = "abc",
+            title = "abc",
+            description = "",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -70,20 +70,20 @@ fun validationTitleEmpty(command: MkplCommand, processor: MkplAdProcessor) = run
     assertEquals(1, ctx.errors.size)
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
-    assertEquals("title", error?.field)
-    assertContains(error?.message ?: "", "title")
+    assertEquals("description", error?.field)
+    assertContains(error?.message ?: "", "description")
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun validationTitleSymbols(command: MkplCommand, processor: MkplAdProcessor) = runTest {
+fun validationDescriptionSymbols(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
         state = MkplState.NONE,
         workMode = MkplWorkMode.TEST,
         adRequest = MkplAd(
-            id = MkplAdId("123"),
-            title = "!@#$%^&*(),.{}",
-            description = "abc",
+            id = stub.id,
+            title = "abc",
+            description = "!@#$%^&*(),.{}",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
         ),
@@ -92,6 +92,6 @@ fun validationTitleSymbols(command: MkplCommand, processor: MkplAdProcessor) = r
     assertEquals(1, ctx.errors.size)
     assertEquals(MkplState.FAILING, ctx.state)
     val error = ctx.errors.firstOrNull()
-    assertEquals("title", error?.field)
-    assertContains(error?.message ?: "", "title")
+    assertEquals("description", error?.field)
+    assertContains(error?.message ?: "", "description")
 }

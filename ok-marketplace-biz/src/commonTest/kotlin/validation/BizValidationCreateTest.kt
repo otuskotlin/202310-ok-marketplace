@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.biz.validation
+package validation
 
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
