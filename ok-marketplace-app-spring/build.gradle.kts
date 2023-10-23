@@ -49,10 +49,13 @@ dependencies {
     // tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+    // repo
+    implementation(project(":ok-marketplace-repo-in-memory"))
+    implementation(project(":ok-marketplace-repo-stubs"))
+
     testImplementation(kotlin("test-junit5"))
-    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux") // Controller, Service, etc..
-    testImplementation("com.ninja-squad:springmockk:$springmockkVersion") // mockking beans
     testImplementation("javax.websocket:javax.websocket-api:1.1")
 }
 

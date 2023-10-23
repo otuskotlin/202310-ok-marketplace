@@ -6,6 +6,6 @@ import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 
 data class MkplAppSettings(
     val appUrls: List<String> = emptyList(),
-    override val processor: MkplAdProcessor = MkplAdProcessor(),
     override val corSettings: MkplCorSettings = MkplCorSettings(),
+    override val processor: MkplAdProcessor = MkplAdProcessor(corSettings),
 ) : IMkplAppSettings

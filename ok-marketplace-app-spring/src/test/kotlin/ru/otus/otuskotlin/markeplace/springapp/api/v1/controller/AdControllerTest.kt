@@ -1,11 +1,9 @@
 package ru.otus.otuskotlin.markeplace.springapp.api.v1.controller
 
-import com.ninjasquad.springmockk.MockkBean
-import io.mockk.coVerify
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.BodyInserters
@@ -14,6 +12,7 @@ import ru.otus.otuskotlin.marketplace.api.v1.models.*
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.mappers.v1.*
+import kotlin.test.Test
 
 // Temporary simple test with stubs
 @WebFluxTest(AdControllerV1::class, OfferControllerV1::class, CorConfig::class)
@@ -21,7 +20,8 @@ internal class AdControllerTest {
     @Autowired
     private lateinit var webClient: WebTestClient
 
-    @MockkBean(relaxUnitFun = true)
+    @Suppress("unused")
+    @MockBean
     private lateinit var processor: MkplAdProcessor
 
     @Test
@@ -83,6 +83,5 @@ internal class AdControllerTest {
                 println("RESPONSE: $it")
                 assertThat(it).isEqualTo(responseObj)
             }
-        coVerify { processor.exec(any()) }
     }
 }

@@ -61,13 +61,13 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-                implementation(ktorServer("core")) 
+                implementation(ktorServer("core"))
                 implementation(ktorServer("cio"))
                 implementation(ktorServer("auto-head-response"))
-                implementation(ktorServer("caching-headers")) 
-                implementation(ktorServer("cors")) 
-                implementation(ktorServer("config-yaml")) 
-                implementation(ktorServer("content-negotiation")) 
+                implementation(ktorServer("caching-headers"))
+                implementation(ktorServer("cors"))
+                implementation(ktorServer("config-yaml"))
+                implementation(ktorServer("content-negotiation"))
                 implementation(ktorServer("websockets"))
 
                 implementation(project(":ok-marketplace-common"))
@@ -91,6 +91,9 @@ kotlin {
                 implementation(project(":ok-marketplace-lib-logging-common"))
                 implementation(project(":ok-marketplace-lib-logging-kermit"))
                 implementation(project(":ok-marketplace-lib-logging-socket"))
+
+                implementation(project(":ok-marketplace-repo-in-memory"))
+                implementation(project(":ok-marketplace-repo-stubs"))
             }
         }
 
@@ -103,6 +106,8 @@ kotlin {
                 implementation(ktorServer("test-host"))
                 implementation(ktorClient("content-negotiation"))
                 implementation(ktorClient("websockets"))
+
+                implementation(project(":ok-marketplace-repo-tests"))
             }
         }
 
