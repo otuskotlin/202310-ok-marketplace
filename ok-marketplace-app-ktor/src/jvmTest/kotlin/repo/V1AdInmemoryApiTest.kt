@@ -15,6 +15,7 @@ import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.ktor.moduleJvm
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
+import ru.otus.otuskotlin.marketplace.common.models.MkplAdLock
 import ru.otus.otuskotlin.marketplace.common.models.MkplDealSide
 import ru.otus.otuskotlin.marketplace.common.models.MkplVisibility
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
@@ -33,6 +34,7 @@ class V1AdInmemoryApiTest {
         description = "abc"
         adType = MkplDealSide.DEMAND
         visibility = MkplVisibility.VISIBLE_PUBLIC
+        lock = MkplAdLock(uuidOld)
     }
     private val initAdSupply = MkplAdStub.prepareResult {
         id = MkplAdId(uuidSup)
@@ -97,6 +99,7 @@ class V1AdInmemoryApiTest {
             description = "КРУТЕЙШИЙ",
             adType = DealSide.DEMAND,
             visibility = AdVisibility.PUBLIC,
+            lock = initAd.lock.asString(),
         )
 
         val response = client.post("/v1/ad/update") {
@@ -126,6 +129,7 @@ class V1AdInmemoryApiTest {
                 requestId = "12345",
                 ad = AdDeleteObject(
                     id = uuidOld,
+                    lock = initAd.lock.asString(),
                 ),
                 debug = AdDebug(
                     mode = AdRequestDebugMode.TEST,

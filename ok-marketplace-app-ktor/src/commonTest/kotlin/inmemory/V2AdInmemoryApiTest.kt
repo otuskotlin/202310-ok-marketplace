@@ -4,17 +4,18 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
-import kotlinx.serialization.encodeToString
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2Mapper
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
 import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.ktor.module
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
-import ru.otus.otuskotlin.marketplace.common.models.*
+import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
+import ru.otus.otuskotlin.marketplace.common.models.MkplAdLock
+import ru.otus.otuskotlin.marketplace.common.models.MkplDealSide
+import ru.otus.otuskotlin.marketplace.common.models.MkplVisibility
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import ru.otus.otuskotlin.marketplace.repo.inmemory.AdRepoInMemory
 import ru.otus.otuskotlin.marketplace.stubs.MkplAdStub
@@ -32,6 +33,7 @@ class V2AdInmemoryApiTest {
         description = "abc"
         adType = MkplDealSide.DEMAND
         visibility = MkplVisibility.VISIBLE_PUBLIC
+        lock = MkplAdLock(uuidOld)
     }
     private val initAdSupply = MkplAdStub.prepareResult {
         id = MkplAdId(uuidSup)
@@ -59,12 +61,9 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
-        val responseText = response.bodyAsText()
         val responseObj = response.body<IResponse>() as AdCreateResponse
-        println(responseText)
         assertEquals(200, response.status.value)
         assertEquals(uuidNew, responseObj.ad?.id)
         assertEquals(createAd.title, responseObj.ad?.title)
@@ -84,8 +83,7 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdReadResponse
         assertEquals(200, response.status.value)
@@ -100,6 +98,7 @@ class V2AdInmemoryApiTest {
             description = "КРУТЕЙШИЙ",
             adType = DealSide.DEMAND,
             visibility = AdVisibility.PUBLIC,
+            lock = initAd.lock.asString(),
         )
 
         val response = client.post("/v2/ad/update") {
@@ -111,8 +110,7 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdUpdateResponse
         assertEquals(200, response.status.value)
@@ -130,14 +128,14 @@ class V2AdInmemoryApiTest {
                 requestId = "12345",
                 ad = AdDeleteObject(
                     id = uuidOld,
+                    lock = initAd.lock.asString(),
                 ),
                 debug = AdDebug(
                     mode = AdRequestDebugMode.TEST,
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdDeleteResponse
         assertEquals(200, response.status.value)
@@ -155,8 +153,7 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdSearchResponse
         assertEquals(200, response.status.value)
@@ -177,8 +174,7 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdOffersResponse
         assertEquals(200, response.status.value)

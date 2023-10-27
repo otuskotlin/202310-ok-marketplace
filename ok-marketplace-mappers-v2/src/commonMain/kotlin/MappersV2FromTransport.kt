@@ -3,6 +3,7 @@ package ru.otus.otuskotlin.marketplace.mappers.v2
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.models.*
+import ru.otus.otuskotlin.marketplace.common.models.MkplWorkMode
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 import ru.otus.otuskotlin.marketplace.mappers.v2.exceptions.UnknownRequestClass
 
@@ -17,7 +18,12 @@ fun MkplContext.fromTransport(request: IRequest) = when (request) {
 }
 
 private fun String?.toAdId() = this?.let { MkplAdId(it) } ?: MkplAdId.NONE
-private fun String?.toAdWithId() = MkplAd(id = this.toAdId())
+private fun String?.toAdLock() = this?.let { MkplAdLock(it) } ?: MkplAdLock.NONE
+private fun AdReadObject?.toInternal() = if (this != null) {
+    MkplAd(id = id.toAdId())
+} else {
+    MkplAd()
+}
 private fun IRequest?.requestId() = this?.requestId?.let { MkplRequestId(it) } ?: MkplRequestId.NONE
 private fun String?.toProductId() = this?.let { MkplProductId(it) } ?: MkplProductId.NONE
 
@@ -51,7 +57,7 @@ fun MkplContext.fromTransport(request: AdCreateRequest) {
 fun MkplContext.fromTransport(request: AdReadRequest) {
     command = MkplCommand.READ
     requestId = request.requestId()
-    adRequest = request.ad?.id.toAdWithId()
+    adRequest = request.ad.toInternal()
     workMode = request.debug.transportToWorkMode()
     stubCase = request.debug.transportToStubCase()
 }
@@ -67,9 +73,18 @@ fun MkplContext.fromTransport(request: AdUpdateRequest) {
 fun MkplContext.fromTransport(request: AdDeleteRequest) {
     command = MkplCommand.DELETE
     requestId = request.requestId()
-    adRequest = request.ad?.id.toAdWithId()
+    adRequest = request.ad.toInternal()
     workMode = request.debug.transportToWorkMode()
     stubCase = request.debug.transportToStubCase()
+}
+
+private fun AdDeleteObject?.toInternal(): MkplAd = if (this != null) {
+    MkplAd(
+        id = id.toAdId(),
+        lock = lock.toAdLock(),
+    )
+} else {
+    MkplAd()
 }
 
 fun MkplContext.fromTransport(request: AdSearchRequest) {
@@ -83,7 +98,7 @@ fun MkplContext.fromTransport(request: AdSearchRequest) {
 fun MkplContext.fromTransport(request: AdOffersRequest) {
     command = MkplCommand.OFFERS
     requestId = request.requestId()
-    adRequest = request.ad?.id.toAdWithId()
+    adRequest = request.ad.toInternal()
     workMode = request.debug.transportToWorkMode()
     stubCase = request.debug.transportToStubCase()
 }
@@ -106,7 +121,8 @@ private fun AdUpdateObject.toInternal(): MkplAd = MkplAd(
     description = this.description ?: "",
     adType = this.adType.fromTransport(),
     visibility = this.visibility.fromTransport(),
-    productId = this.productId.toProductId()
+    productId = this.productId.toProductId(),
+    lock = this.lock.toAdLock(),
 )
 
 private fun AdVisibility?.fromTransport(): MkplVisibility = when (this) {
