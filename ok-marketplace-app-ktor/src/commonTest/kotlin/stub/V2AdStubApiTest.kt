@@ -9,7 +9,10 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2Mapper
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
+import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.ktor.module
+import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoStub
+import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -146,7 +149,7 @@ class V2AdStubApiTest {
     }
 
     private fun v2TestApplication(function: suspend (HttpClient) -> Unit): Unit = testApplication {
-        application { module() }
+        application { module(MkplAppSettings(corSettings = MkplCorSettings(repoStub = AdRepoStub()))) }
         val client = createClient {
             install(ContentNegotiation) {
                 json(apiV2Mapper)

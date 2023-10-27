@@ -7,6 +7,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 val ktorVersion: String by project
 val logbackVersion: String by project
 val serializationVersion: String by project
+val testContainersVersion: String by project
+val kmpUUIDVersion: String by project
 
 // ex: Converts to "io.ktor:ktor-ktor-server-netty:2.0.1" with only ktor("netty")
 fun ktor(module: String, version: String? = ktorVersion): Any =
@@ -126,12 +128,17 @@ kotlin {
                 implementation(project(":ok-marketplace-api-v1-jackson"))
                 implementation(project(":ok-marketplace-mappers-v1"))
                 implementation(project(":ok-marketplace-lib-logging-logback"))
+
+                implementation(project(":ok-marketplace-repo-postgresql"))
             }
         }
 
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
+
+                implementation("org.testcontainers:postgresql:$testContainersVersion")
+                implementation("com.benasher44:uuid:$kmpUUIDVersion")
             }
         }
     }

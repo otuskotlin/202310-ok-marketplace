@@ -5,7 +5,6 @@ import io.github.reactivecircus.cache4k.Cache
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.model.AdEntity
-import ru.otus.otuskotlin.marketplace.common.helpers.errorRepoConcurrency
 import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.repo.*
 import kotlin.time.Duration
@@ -38,7 +37,7 @@ class AdRepoInMemory(
 
     override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
         val key = randomUuid()
-        val ad = rq.ad.copy(id = MkplAdId(key))
+        val ad = rq.ad.copy(id = MkplAdId(key), lock = MkplAdLock(randomUuid()))
         val entity = AdEntity(ad)
         cache.put(key, entity)
         return DbAdResponse(
@@ -58,46 +57,48 @@ class AdRepoInMemory(
             } ?: resultErrorNotFound
     }
 
-    private suspend fun doUpdate(key: String, oldLock: String, okBlock: (oldAd: AdEntity) -> DbAdResponse): DbAdResponse = mutex.withLock {
-        val oldAd = cache.get(key)
-        when {
-            oldAd == null -> resultErrorNotFound
-            oldAd.lock != oldLock -> DbAdResponse(
-                data = oldAd.toInternal(),
-                isSuccess = false,
-                errors = listOf(errorRepoConcurrency(MkplAdLock(oldLock), oldAd.lock?.let { MkplAdLock(it) }))
-            )
+    private suspend fun doUpdate(
+        id: MkplAdId,
+        oldLock: MkplAdLock,
+        okBlock: (key: String, oldAd: AdEntity) -> DbAdResponse
+    ): DbAdResponse {
+        val key = id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
+        val oldLockStr = oldLock.takeIf { it != MkplAdLock.NONE }?.asString()
+            ?: return resultErrorEmptyLock
 
-            else -> okBlock(oldAd)
+        return mutex.withLock {
+            val oldAd = cache.get(key)
+            when {
+                oldAd == null -> resultErrorNotFound
+                oldAd.lock != oldLockStr -> DbAdResponse.errorConcurrent(
+                    oldLock,
+                    oldAd.toInternal()
+                )
+
+                else -> okBlock(key, oldAd)
+            }
         }
     }
 
-    override suspend fun updateAd(rq: DbAdRequest): DbAdResponse {
-        val key = rq.ad.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
-        val oldLock = rq.ad.lock.takeIf { it != MkplAdLock.NONE }?.asString() ?: return resultErrorEmptyLock
-        val newAd = rq.ad.copy()
-        val entity = AdEntity(newAd)
-        return doUpdate(key, oldLock) {
+    override suspend fun updateAd(rq: DbAdRequest): DbAdResponse =
+        doUpdate(rq.ad.id, rq.ad.lock) { key, _ ->
+            val newAd = rq.ad.copy(lock = MkplAdLock(randomUuid()))
+            val entity = AdEntity(newAd)
             cache.put(key, entity)
-            DbAdResponse(
-                data = newAd,
-                isSuccess = true,
-            )
+            DbAdResponse.success(newAd)
         }
-    }
 
-    override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse {
-        val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
-        val oldLock = rq.lock.takeIf { it != MkplAdLock.NONE }?.asString() ?: return resultErrorEmptyLock
-        return doUpdate(key, oldLock) {oldAd ->
+
+    override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse =
+        doUpdate(rq.id, rq.lock) { key, oldAd ->
             cache.invalidate(key)
-            DbAdResponse(
-                data = oldAd.toInternal(),
-                isSuccess = true,
-            )
+            DbAdResponse.success(oldAd.toInternal())
         }
-    }
 
+    /**
+     * Поиск объявлений по фильтру
+     * Если в фильтре не установлен какой-либо из параметров - по нему фильтрация не идет
+     */
     override suspend fun searchAd(rq: DbAdFilterRequest): DbAdsResponse {
         val result = cache.asMap().asSequence()
             .filter { entry ->

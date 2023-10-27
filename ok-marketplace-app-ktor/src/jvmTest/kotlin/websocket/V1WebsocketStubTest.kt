@@ -5,7 +5,10 @@ import io.ktor.serialization.jackson.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.withTimeout
 import ru.otus.otuskotlin.marketplace.api.v1.models.*
+import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.ktor.moduleJvm
+import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoStub
+import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -127,7 +130,7 @@ class V1WebsocketStubTest {
         request: IRequest,
         crossinline assertBlock: (T) -> Unit
     ) = testApplication {
-        application { moduleJvm() }
+        application { moduleJvm(MkplAppSettings(corSettings = MkplCorSettings(repoStub = AdRepoStub()))) }
         val client = createClient {
             install(WebSockets) {
                 contentConverter = JacksonWebsocketContentConverter()

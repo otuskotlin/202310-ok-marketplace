@@ -51,6 +51,7 @@ dependencies {
 
     // repo
     implementation(project(":ok-marketplace-repo-in-memory"))
+    implementation(project(":ok-marketplace-repo-postgresql"))
     implementation(project(":ok-marketplace-repo-stubs"))
 
     testImplementation(kotlin("test-junit5"))
