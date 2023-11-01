@@ -1,5 +1,4 @@
 import kotlin.reflect.KClass
-import kotlin.test.assertTrue
 
 /*
 fun <T> willNotCompile(variable: T) {

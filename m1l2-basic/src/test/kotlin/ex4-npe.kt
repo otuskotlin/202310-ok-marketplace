@@ -1,8 +1,5 @@
-import org.junit.Assert
 import org.junit.Assert.assertThrows
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 private var x = 1
 

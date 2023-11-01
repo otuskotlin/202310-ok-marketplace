@@ -1,12 +1,12 @@
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class StringsTest {
     @Test
     fun strings() {
         val string = "Hello, otus!\n"
         val elementOfString: Char = string[1] // string.get(1) 'e'
+        assertEquals('e', elementOfString)
 
         val codeExample = """
             val string = "Hello, otus!\n"
