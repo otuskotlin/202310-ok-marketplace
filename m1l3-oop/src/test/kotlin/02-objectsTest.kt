@@ -1,3 +1,5 @@
+package ru.otus.otuskotlin.oop
+
 import org.junit.Test
 
 class ObjectsExample {

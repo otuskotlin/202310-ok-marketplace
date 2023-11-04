@@ -1,3 +1,5 @@
+package ru.otus.otuskotlin.oop
+
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.*
@@ -6,7 +8,7 @@ import kotlin.test.assertEquals
 
 class Cash(
     val amount: BigDecimal,
-    val currency: Currency
+    private val currency: Currency
 ) {
     constructor(
         amount: String,

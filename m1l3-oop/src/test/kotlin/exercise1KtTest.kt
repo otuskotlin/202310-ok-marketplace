@@ -1,5 +1,6 @@
-import kotlin.test.Test
+package ru.otus.otuskotlin.oop
 
+import kotlin.test.Test
 
 class exercise1KtTest {
     // task 1 - make a Rectangle class that will have width and height

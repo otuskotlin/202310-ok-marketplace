@@ -5,17 +5,25 @@ import kotlin.test.assertEquals
 
 sealed interface Base
 
-class ChildA : Base
+data object ChildA : Base
 
-class ChildB : Base
+class ChildB : Base {
+    override fun equals(other: Any?): Boolean {
+        return this === other
+    }
+
+    override fun hashCode(): Int {
+        return System.identityHashCode(this)
+    }
+}
 
 // Uncomment this to get compilation error
 //class ChildC : Base
 
-class ObjectsTest {
+class SealedTest {
     @Test
     fun test() {
-        val obj: Base = ChildA()
+        val obj: Base = ChildA
 
         val result = when (obj) {
             is ChildA -> "a"
