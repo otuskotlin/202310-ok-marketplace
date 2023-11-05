@@ -27,6 +27,32 @@ class Cash(
         }
         return Cash(amount - other.amount, currency)
     }
+
+    companion object {
+        val NONE = Cash(BigDecimal.ZERO, Currency.getInstance("ru"))
+    }
+}
+
+abstract class BaseClass() {
+
+}
+
+interface IClass {
+
+}
+
+@Suppress("unused")
+class InheritedClass(
+    arg: String,
+    val prop: String = arg,
+) : IClass, BaseClass() {
+    init {
+        println("Init in constructor with $arg")
+    }
+
+    fun some() {
+        this.prop
+    }
 }
 
 class CashTest {
@@ -41,5 +67,8 @@ class CashTest {
         println(c.format(Locale.FRANCE))
 
         assertEquals(c.amount, BigDecimal.TEN)
+
+        @Suppress("RedundantCompanionReference")
+        assertEquals(Cash.Companion.NONE, Cash.NONE)
     }
 }
