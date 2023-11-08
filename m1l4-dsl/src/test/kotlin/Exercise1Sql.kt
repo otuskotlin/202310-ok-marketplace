@@ -1,12 +1,15 @@
-package ru.otus.otuskotlin.marketplace.dsl
+@file:Suppress("unused")
+
+package ru.otus.otuskotlin.m1l4
 
 import org.junit.Test
+import kotlin.test.assertEquals
 
 // Реализуйте dsl для составления sql запроса, чтобы все тесты стали зелеными.
-class SqlDslUnitTest {
-//    private fun checkSQL(expected: String, sql: SqlSelectBuilder) {
-//        assertEquals(expected, sql.build())
-//    }
+class Exercise1Sql {
+    private fun checkSQL(expected: String, sql: SqlSelectBuilder) {
+        assertEquals(expected, sql.build())
+    }
 
     @Test
     fun `simple select all from table`() {
@@ -106,4 +109,8 @@ class SqlDslUnitTest {
 //
 //        checkSQL(expected, real)
     }
+}
+
+class SqlSelectBuilder {
+    fun build(): String = TODO()
 }

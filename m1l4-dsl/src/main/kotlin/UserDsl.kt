@@ -1,7 +1,7 @@
-package ru.otus.otuskotlin.marketplace.user.dsl
+@file:Suppress("unused")
 
-import ru.otus.otuskotlin.marketplace.user.models.Action
-import ru.otus.otuskotlin.marketplace.user.models.User
+package ru.otus.otuskotlin.m1l4
+
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -121,11 +121,7 @@ class UserBuilder {
     )
 }
 
-@UserDsl1
 fun buildUser(block: UserBuilder.() -> Unit) = UserBuilder().apply(block).build()
 
 @DslMarker
 annotation class UserDsl
-
-@DslMarker
-annotation class UserDsl1
