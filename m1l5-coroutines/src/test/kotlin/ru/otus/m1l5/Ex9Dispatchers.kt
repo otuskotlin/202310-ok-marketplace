@@ -1,12 +1,7 @@
 package ru.otus.m1l5
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.junit.Test
-import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -23,43 +18,40 @@ class Ex10Dispatchers {
     }
 
     @Test
-    fun default() {
-        CoroutineScope(Job()).createCoro()
-        Thread.sleep(2000)
+    fun default() = runBlocking {
+        createCoro()
     }
 
     @Test
-    fun io() {
-        CoroutineScope(Job() + Dispatchers.IO).createCoro()
-        Thread.sleep(2000)
+    fun io() = runBlocking {
+        withContext(Dispatchers.IO) { createCoro() }
     }
 
     @Test
-    fun custom() {
-        val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-        CoroutineScope(Job() + dispatcher).createCoro()
-        Thread.sleep(6000)
-    }
-
-    @Test
-    fun unconfined() {
-        val scope = CoroutineScope(Dispatchers.Default)
-        //val scope = CoroutineScope(Dispatchers.Unconfined)
-
-        scope.launch() {
-            println("start coroutine")
-            suspendCoroutine {
-                println("suspend function, start")
-                thread {
-                    println("suspend function, background work")
-                    Thread.sleep(1000)
-                    it.resume("Data!")
-                }
-            }
-            println("end coroutine")
+    fun custom() = runBlocking {
+//        val dispatcher = Executors.newFixedThreadPool(8).asCoroutineDispatcher()
+        @OptIn(DelicateCoroutinesApi::class)
+        val dispatcher = newFixedThreadPoolContext(8, "single")
+        dispatcher.use {
+            withContext(Job() + dispatcher) { createCoro() }
         }
-
-        Thread.sleep(2000)
     }
 
+    @Test
+    fun unconfined(): Unit = runBlocking(Dispatchers.Default) {
+        withContext(Dispatchers.Unconfined) {
+            launch() {
+                println("start coroutine ${Thread.currentThread().name}")
+                suspendCoroutine {
+                    println("suspend function, start")
+                    thread {
+                        println("suspend function, background work")
+                        Thread.sleep(1000)
+                        it.resume("Data!")
+                    }
+                }
+                println("end coroutine")
+            }
+        }
+    }
 }

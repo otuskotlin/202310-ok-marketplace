@@ -1,13 +1,6 @@
 package ru.otus.m1l5
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.junit.Test
 
 class Ex5Job {
@@ -85,9 +78,8 @@ class Ex5Job {
         val job1 = launch {
             println("job1 block $this")
 
-            val myJob = this.coroutineContext[Job]
+            val myJob = this.coroutineContext.job
             println("job1 myJob $myJob")
-
 
             val job2 = launch {
                 println("job2 block $this")

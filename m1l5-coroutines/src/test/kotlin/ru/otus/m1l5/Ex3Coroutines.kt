@@ -2,9 +2,7 @@
 
 package ru.otus.m1l5
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -25,7 +23,7 @@ class Ex3Coroutines {
 
     @Suppress("unused")
     fun x() {
-        //someMethod()
+//        someMethod()
     }
 
     @Test
@@ -56,7 +54,7 @@ class Ex3Coroutines {
         val list = listOf(1, 2, 3)
 
         list.forEach { otherMethod(it) } // это работает, потому что inline
-        //list.forEach (Consumer { otherMethod(it) }) // это не работает, потому что ждут обычную функцию
+//        list.forEach (Consumer { otherMethod(it) }) // это не работает, потому что ждут обычную функцию
 
         doSomething(::otherMethod) // ждут suspend и передаем его
         doSomething(::simpleMethod) // ждут suspend, передаем обычный метод - это ок, котлин вставит преобразование
@@ -82,18 +80,23 @@ class Ex3Coroutines {
     @Test
     fun launchMany(): Unit = runBlocking {// ***
         val counter = AtomicInteger()
+        var dummyCounter = 0
 
         println("START")
-        launch {
-            for (i in 0..1_000_000) {
-                launch {
-                    delay(100)
-                    counter.incrementAndGet()
+        @OptIn(DelicateCoroutinesApi::class)
+        newFixedThreadPoolContext(10, "fixed").use { fixThreadDispatcher ->
+            launch {
+                for (i in 0..1_000_000) {
+                    launch(fixThreadDispatcher) {
+                        delay(100)
+                        counter.incrementAndGet()
+                        dummyCounter++
+                    }
                 }
-            }
-        }.join()
+            }.join()
+        }
 
-        println("COMPLETE ${counter.get()}")
+        println("COMPLETE ${counter.get()}  Dummy: $dummyCounter")
     }
 
 }
