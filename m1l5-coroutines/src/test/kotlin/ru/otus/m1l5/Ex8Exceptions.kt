@@ -2,6 +2,7 @@ package ru.otus.m1l5
 
 import kotlinx.coroutines.*
 import org.junit.Test
+import kotlin.time.Duration.Companion.seconds
 
 class Ex8Exceptions {
     @Test
@@ -264,6 +265,69 @@ class Ex8Exceptions {
         Thread.sleep(2000)
 
         println("COMPLETED!")
+    }
+
+    @Test
+    fun uncaught(): Unit = runBlocking {
+        launch(SupervisorJob()) {
+            try {
+                launch { throw Exception() }
+                launch { println("Ha-Ha!") }
+                println("no exception")
+            } catch (e: Throwable) {
+                println("Don't get to here")
+            }
+        }.join()
+        println("DONE")
+    }
+
+    @Test
+    // runCatching дает тот же результат, что и try-catch
+    fun runCatchingOnFailure(): Unit = runBlocking {
+        launch(SupervisorJob()) {
+            runCatching {
+                launch { throw Exception() }
+                launch { println("Ha-Ha!") }
+                println("no exception")
+            }.onFailure {
+                println("Don't get to here")
+            }
+        }.join()
+        println("DONE")
+    }
+
+    @Test
+    // Перехват исключения в скоупе
+    fun catchInScope(): Unit = runBlocking {
+        launch(SupervisorJob()) {
+            runCatching {
+                coroutineScope {
+                    launch { throw Exception() }
+                    launch { println("Ha-Ha!") }
+                }
+                println("no exception")
+            }.onFailure {
+                println("CAUGHT!!")
+            }
+        }.join()
+        println("DONE")
+    }
+
+    @Test
+    // Перехват исключения в контексте
+    fun catchInContext(): Unit = runBlocking {
+        launch(SupervisorJob()) {
+            runCatching {
+                withContext(this.coroutineContext) {
+                    launch { throw Exception() }
+                    launch { delay(1.seconds); println("Ha-Ha!") }
+                }
+                println("no exception")
+            }.onFailure {
+                println("CAUGHT!!")
+            }
+        }.join()
+        println("DONE")
     }
 
 }
