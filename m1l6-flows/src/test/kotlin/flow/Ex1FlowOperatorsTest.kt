@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class Ex1FlowOperatorsTest {
 
     @Test
-    fun test1(): Unit = runBlocking {
+    fun simple(): Unit = runBlocking {
         flowOf(1, 2, 3, 4)
             .onEach { println(it) }
             .map { it + 1 }
@@ -16,36 +16,34 @@ class Ex1FlowOperatorsTest {
             .collect { println("Result number $it") }
     }
 
-
-    @OptIn(DelicateCoroutinesApi::class)
-    private val ApiDispatcher = newSingleThreadContext("Api-Thread")
-
-    @OptIn(DelicateCoroutinesApi::class)
-    private val DbDispatcher = newSingleThreadContext("Db-Thread")
-
     fun <T> Flow<T>.printThreadName(msg: String) =
         this.onEach { println("Msg = $msg, thread name = ${Thread.currentThread().name}") }
 
     @Test
-    fun test2(): Unit = runBlocking {
-        flowOf(10, 20, 30)
-            .filter { it % 2 == 0 }
-            .map {
-                delay(2000)
-                it
+    @OptIn(DelicateCoroutinesApi::class)
+    fun coroutineContextChange(): Unit = runBlocking {
+        newSingleThreadContext("Api-Thread").use { apiDispatcher ->
+            newSingleThreadContext("Db-Thread").use { dbDispatcher ->
+                flowOf(10, 20, 30)
+                    .filter { it % 2 == 0 }
+                    .map {
+                        delay(2000)
+                        it
+                    }
+                    .printThreadName("api call")
+                    .flowOn(apiDispatcher)
+                    .map { it + 1 }
+                    .printThreadName("db call")
+                    .flowOn(dbDispatcher)
+                    .printThreadName("last operation")
+                    .onEach { println("On each $it") }
+                    .collect()
             }
-            .printThreadName("api call")
-            .flowOn(ApiDispatcher)
-            .map { it + 1 }
-            .printThreadName("db call")
-            .flowOn(DbDispatcher)
-            .printThreadName("last operation")
-            .onEach { println("On each $it") }
-            .collect()
+        }
     }
 
     @Test
-    fun test3(): Unit = runBlocking {
+    fun startersStopers(): Unit = runBlocking {
         flow {
             while (true) {
                 emit(1)
@@ -65,7 +63,7 @@ class Ex1FlowOperatorsTest {
     }
 
     @Test
-    fun test4(): Unit = runBlocking {
+    fun buffering(): Unit = runBlocking {
         var sleepIndex = 1
         flow {
             while (sleepIndex < 3) {
@@ -84,41 +82,23 @@ class Ex1FlowOperatorsTest {
     }
 
 
-    fun <T> Flow<T>.zipWithNext(): Flow<Pair<T, T>> = flow {
-        var prev: T? = null
-        collect {
-            if (prev != null) emit(prev!! to it)
-            prev = it
-        }
-    }
-
     @Test
-    fun test5(): Unit = runBlocking {
+    fun customOperator(): Unit = runBlocking {
+        fun <T> Flow<T>.zipWithNext(): Flow<Pair<T, T>> = flow {
+            var prev: T? = null
+            collect { el ->
+                prev?.also { pr -> emit(pr to el) }
+                prev = el
+            }
+        }
+
         flowOf(1, 2, 3, 4)
             .zipWithNext()
             .collect { println(it) }
     }
 
     @Test
-    fun test6(): Unit = runBlocking {
-        val coldFlow = flowOf(100, 101, 102, 103, 104, 105).onEach { println("Cold: $it") }
-
-        launch { coldFlow.collect() }
-        launch { coldFlow.collect() }
-
-        val hotFlow = flowOf(200, 201, 202, 203, 204, 205)
-            .onEach { println("Hot: $it") }
-            .shareIn(this, SharingStarted.Lazily)
-
-        launch { hotFlow.collect() }
-        launch { hotFlow.collect() }
-
-        delay(500)
-        coroutineContext.cancelChildren()
-    }
-
-    @Test
-    fun test7(): Unit = runBlocking {
+    fun toListTermination(): Unit = runBlocking {
         val list = flow {
             emit(1)
             delay(100)
@@ -132,7 +112,7 @@ class Ex1FlowOperatorsTest {
     }
 
     @Test
-    fun test8(): Unit = runBlocking {
+    fun toList2(): Unit = runBlocking {
         val list = flow {
             var index = 0
             // If there is an infinite loop here, while (true)
@@ -148,4 +128,30 @@ class Ex1FlowOperatorsTest {
 
         println("List: $list")
     }
+
+    @OptIn(FlowPreview::class)
+    @Test
+    fun sampleDebounce() = runBlocking {
+        val f = flow {
+            repeat(20) {
+                delay(100)
+                emit(it)
+                delay(400)
+                emit("${it}a")
+            }
+        }
+
+        println("SAMPLE")
+        f.sample(200).collect {
+            print(" $it")
+        }
+        println()
+        println("DEBOUNCE")
+        f.debounce(200).collect {
+            print(" $it")
+        }
+    }
+
 }
+
+

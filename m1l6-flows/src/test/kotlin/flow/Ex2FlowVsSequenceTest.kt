@@ -1,10 +1,8 @@
 package ru.otus.otuskotlin.m1l6.flow
 
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 class Ex2FlowVsSequenceTest {
@@ -24,8 +22,10 @@ class Ex2FlowVsSequenceTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun sequenceTest(): Unit = runBlocking {
+    // Thread.sleep блокирует корутину
+    fun sequenceTest(): Unit = runBlocking(Dispatchers.IO.limitedParallelism(1)) {
         launch {
             for (k in 1..5) {
                 println("I'm not blocked $k")
@@ -35,8 +35,9 @@ class Ex2FlowVsSequenceTest {
         simpleSequence().forEach { println(it) }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun flowTest(): Unit = runBlocking {
+    fun flowTest(): Unit = runBlocking(Dispatchers.IO.limitedParallelism(1)) {
         launch {
             for (k in 1..5) {
                 println("I'm not blocked $k")

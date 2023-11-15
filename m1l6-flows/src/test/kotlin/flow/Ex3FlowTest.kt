@@ -24,7 +24,7 @@ class Ex3FlowTest {
     }
 
     @Test
-    fun test1(): Unit = runBlocking {
+    fun rawDetectorsData(): Unit = runBlocking {
         // сырые данные от датчиков
         detectors()
             .map { it.samples() }
@@ -37,7 +37,7 @@ class Ex3FlowTest {
     }
 
     @Test
-    fun test2(): Unit = runBlocking {
+    fun oncePerSecondOrLast(): Unit = runBlocking {
         // данные от датчиков раз в секунду от каждого (если нового нет, то последнее)
         val desiredPeriod = 1000L
         detectors()
@@ -63,7 +63,7 @@ class Ex3FlowTest {
     }
 
     @Test
-    fun test3(): Unit = runBlocking {
+    fun launchIn(): Unit = runBlocking {
         val desiredPeriod = 1000L
         val samples = detectors()
             .map {
@@ -93,7 +93,7 @@ class Ex3FlowTest {
     }
 
     @Test
-    fun test4(): Unit = runBlocking {
+    fun shareOncePerSecondData(): Unit = runBlocking {
         val desiredPeriod = 1000L
         val flows = detectors()
             .map {

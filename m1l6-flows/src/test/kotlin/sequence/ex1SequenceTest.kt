@@ -92,7 +92,7 @@ fun processAsSeq(
 class SequenceTest {
 
     companion object {
-        private val testFigure = listOf(
+        private val testFigureList = listOf(
             Figure(Color.GREEN, Shape.CIRCLE),
             Figure(Color.VIOLET, Shape.SQUARE),
             Figure(Color.BLUE, Shape.RHOMBUS),
@@ -103,7 +103,7 @@ class SequenceTest {
     @Test
     fun collection() {
         var counter = 0
-        val figure = testFigure
+        val figure = testFigureList
             .map {
                 counter++
                 println("Change color")
@@ -121,7 +121,7 @@ class SequenceTest {
     @Test
     fun sequence() {
         var counter = 0
-        val figure = testFigure.asSequence()
+        val figure = testFigureList.asSequence()
             .map {
                 counter++
                 println("Change color")
