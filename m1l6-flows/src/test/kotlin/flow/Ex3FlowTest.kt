@@ -1,14 +1,13 @@
-package flow
+package ru.otus.otuskotlin.m1l6.flow
 
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import kotlin.random.Random
 
-class ex3FlowTest {
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+class Ex3FlowTest {
     private fun detectors() : List<Detector> {
         val random = Random.Default
         val seq = sequence {

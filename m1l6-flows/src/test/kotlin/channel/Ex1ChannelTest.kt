@@ -1,4 +1,4 @@
-package channel
+package ru.otus.otuskotlin.m1l6.channel
 
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
-class ex1ChannelTest {
+class Ex1ChannelTest {
 
     @Test
     fun test1(): Unit = runBlocking {

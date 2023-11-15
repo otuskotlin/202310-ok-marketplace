@@ -1,4 +1,4 @@
-package flow
+package ru.otus.otuskotlin.m1l6.flow
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose

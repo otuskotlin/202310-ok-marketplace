@@ -1,11 +1,11 @@
-package flow
+package ru.otus.otuskotlin.m1l6.flow
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import org.junit.jupiter.api.Test
 
-class ex1FlowOperatorsTest {
+class Ex1FlowOperatorsTest {
 
     @Test
     fun test1(): Unit = runBlocking {

@@ -1,4 +1,4 @@
-package flow
+package ru.otus.otuskotlin.m1l6.flow
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
-class ex2FlowVsSequenceTest {
+class Ex2FlowVsSequenceTest {
 
     private fun simpleSequence(): Sequence<Int> = sequence {
         for (i in 1..5) {
