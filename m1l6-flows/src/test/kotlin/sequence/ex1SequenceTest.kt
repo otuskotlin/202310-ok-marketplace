@@ -2,6 +2,10 @@ package ru.otus.otuskotlin.m1l6.sequence
 
 import org.junit.jupiter.api.Test
 
+/**
+ * Упростить примеры, убрать лишнее
+ */
+
 enum class Color {
     YELLOW,
     GREEN,
@@ -100,6 +104,9 @@ class SequenceTest {
         )
     }
 
+    /**
+     * В коллекции выполняется перекраска всех элементов списка
+     */
     @Test
     fun collection() {
         var counter = 0
@@ -118,6 +125,9 @@ class SequenceTest {
         println("Counter: $counter")
     }
 
+    /**
+     * В последовательности цепочка обработок такая же как в коллекции, но обработки выполнены только необходимые
+     */
     @Test
     fun sequence() {
         var counter = 0
@@ -136,6 +146,10 @@ class SequenceTest {
         println("Counter: $counter")
     }
 
+    /**
+     * Самостоятельно сравните код в processAsList и processAsSeq. При запуске вы увидите, что число операций в
+     * последовательности меньше
+     */
     @Test
     fun smallSequence() {
         val words = "The quick brown fox jumps over the lazy dog".split(" ")
@@ -148,6 +162,9 @@ class SequenceTest {
         processAsSeq(words, wordLength, take, printOperation)
     }
 
+    /**
+     * Как выше, просто размер последовательности больше
+     */
     @Test
     fun bigSequence() {
         val words = ("So, the sequences let you avoid building results of intermediate steps, " +
@@ -200,6 +217,10 @@ class SequenceTest {
         println("Counter: $counter")
     }
 
+    /**
+     * Здесь испльзуется блокирующая задержка на 3 секунды. Вы должны увидеть, недостаток, который покрывается в
+     * корутинах и в Flow
+     */
     @Test
     fun blockingCall() {
         val sequence = sequenceOf(1, 2, 3)
@@ -210,6 +231,26 @@ class SequenceTest {
             }
             .toList()
         println("Sequence: $sequence")
+    }
+
+    /**
+     * Демонстрация холодного поведения. Последовательность вызывается оба раза с нуля.
+     */
+    @Test
+    fun coldFeature() {
+        val seq = sequence {
+            var x = 0
+            for (i in (1..15)) {
+                x += i
+                yield(x)
+            }
+        }
+
+        val s1 = seq.map { it } // не запущено
+        val s2 = seq.map { it * 2 } // не работает
+        // Здесь seq вызвалась оба раза
+        println("S1: ${s1.toList()}") // терминальный оператор здесь
+        println("S2: ${s2.toList()}")
     }
 
 }

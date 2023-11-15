@@ -10,7 +10,7 @@ class Ex1FlowOperatorsTest {
     @Test
     fun simple(): Unit = runBlocking {
         flowOf(1, 2, 3, 4)
-            .onEach { println(it) }
+            .onEach { println(it)  }
             .map { it + 1 }
             .filter { it % 2 == 0 }
             .collect { println("Result number $it") }
