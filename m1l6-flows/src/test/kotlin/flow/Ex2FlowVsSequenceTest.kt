@@ -2,7 +2,7 @@ package ru.otus.otuskotlin.m1l6.flow
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 
 /**
  * Демонстрация квазипараллельной работы flow и корутин по сравнению с последовательностями.

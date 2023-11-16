@@ -1,6 +1,7 @@
 package ru.otus.otuskotlin.m1l6.sequence
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
+
 
 class SequenceTest {
 
