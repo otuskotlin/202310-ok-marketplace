@@ -7,41 +7,57 @@ import org.junit.jupiter.api.Test
 
 class Ex1FlowOperatorsTest {
 
+    /**
+     * Простейшая цепочка flow
+     */
     @Test
     fun simple(): Unit = runBlocking {
-        flowOf(1, 2, 3, 4)
-            .onEach { println(it)  }
+        flowOf(1, 2, 3, 4) // билдер
+            .onEach { println(it) } // операции ...
             .map { it + 1 }
             .filter { it % 2 == 0 }
-            .collect { println("Result number $it") }
+            .collect { println("Result number $it") } // терминальный оператор
     }
 
+    /**
+     * Хелпер-функция для печати текущего потока
+     */
     fun <T> Flow<T>.printThreadName(msg: String) =
         this.onEach { println("Msg = $msg, thread name = ${Thread.currentThread().name}") }
 
+    /**
+     * Демонстрация переключения корутин-контекста во flow
+     */
     @Test
     @OptIn(DelicateCoroutinesApi::class)
     fun coroutineContextChange(): Unit = runBlocking {
+        // Просто создали диспетчера и безопасно положили его в apiDispatcher
         newSingleThreadContext("Api-Thread").use { apiDispatcher ->
+            // еще один...
             newSingleThreadContext("Db-Thread").use { dbDispatcher ->
-                flowOf(10, 20, 30)
-                    .filter { it % 2 == 0 }
+
+                // Контекст переключается в ОБРАТНОМ ПОРЯДКЕ, т.е. СНИЗУ ВВЕРХ
+                flowOf(10, 20, 30) // apiDispatcher
+                    .filter { it % 2 == 0 } // apiDispatcher
                     .map {
                         delay(2000)
                         it
-                    }
-                    .printThreadName("api call")
-                    .flowOn(apiDispatcher)
-                    .map { it + 1 }
-                    .printThreadName("db call")
-                    .flowOn(dbDispatcher)
-                    .printThreadName("last operation")
-                    .onEach { println("On each $it") }
-                    .collect()
+                    } // apiDispatcher
+                    .printThreadName("api call") // apiDispatcher
+                    .flowOn(apiDispatcher) // Переключаем контекст выполнения на apiDispatcher
+                    .map { it + 1 } // dbDispatcher
+                    .printThreadName("db call") // dbDispatcher
+                    .flowOn(dbDispatcher) // Переключаем контекст выполнения на dbDispatcher
+                    .printThreadName("last operation") // Default
+                    .onEach { println("On each $it") } // Default
+                    .collect() // запустится в контексте по умолчанию, т.е. в Dispatchers.Default
             }
         }
     }
 
+    /**
+     * Демонстрация тригеров onStart, onCompletion, catch, onEach
+     */
     @Test
     fun startersStopers(): Unit = runBlocking {
         flow {
@@ -55,39 +71,55 @@ class Ex1FlowOperatorsTest {
                 throw RuntimeException("Custom error!")
             }
         }
-            .onStart { println("On start") }
-            .onCompletion { println(" On completion") }
-            .catch { println("Catch: ${it.message}") }
-            .onEach { println("On each: $it") }
+            .onStart { println("On start") } // Запустится один раз только вначале
+            .onCompletion { println(" On completion") } // Запустится один раз только вконце
+            .catch { println("Catch: ${it.message}") } // Запустится только при генерации исключения
+            .onEach { println("On each: $it") } // Генерируется для каждого сообщения
             .collect { }
     }
 
+
+    /**
+     * Демонстрация буферизации.
+     * Посмотрите как меняется порядок следования сообщений при применении буфера.
+     * Буфер можно выставить в 0, либо поставить люое положительное значение.
+     * Попробуйте поменять тип буфера и посмотрите как изменится поведение. Лучше менять при размере буфера 3.
+     * Имейте в виду, что инициализация генерации и обработки элемента в цепочке всегда происходит в терминальном
+     * операторе.
+     */
     @Test
     fun buffering(): Unit = runBlocking {
-        var sleepIndex = 1
+        val timeInit = System.currentTimeMillis()
+        var sleepIndex = 1 // Счетчик инкрементится в терминальном операторе после большой задержки
+        var el = 1 // Простой номер сообщения
         flow {
-            while (sleepIndex < 3) {
+            while (sleepIndex < 5) {
                 delay(500)
-                emit(sleepIndex)
+                println("emitting $sleepIndex ${System.currentTimeMillis() - timeInit}ms")
+                emit(el++ to sleepIndex)
             }
         }
-            .onEach { println("Send to flow: $it") }
-            .buffer(3, BufferOverflow.DROP_LATEST)
-            .onEach { println("Processing : $it") }
+            .onEach { println("Send to flow: $it ${System.currentTimeMillis() - timeInit}ms") }
+            .buffer(3, BufferOverflow.DROP_LATEST) // Здесь включаем буфер размером 3 элемента
+//            .buffer(3, BufferOverflow.DROP_OLDEST) // Попробуйте разные варианты типов и размеров буферов
+//            .buffer(3, BufferOverflow.SUSPEND)
+            .onEach { println("Processing : $it ${System.currentTimeMillis() - timeInit}ms") }
             .collect {
-                println("Sleep")
+                println("Sleep ${System.currentTimeMillis() - timeInit}ms")
                 sleepIndex++
                 delay(2_000)
             }
     }
 
-
+    /**
+     * Демонстрация реализации кастомного оператора для цепочки.
+     */
     @Test
     fun customOperator(): Unit = runBlocking {
         fun <T> Flow<T>.zipWithNext(): Flow<Pair<T, T>> = flow {
             var prev: T? = null
             collect { el ->
-                prev?.also { pr -> emit(pr to el) }
+                prev?.also { pr -> emit(pr to el) } // Здесь корректная проверка на NULL при использовании var
                 prev = el
             }
         }
@@ -97,6 +129,10 @@ class Ex1FlowOperatorsTest {
             .collect { println(it) }
     }
 
+    /**
+     * Терминальный оператор toList.
+     * Попробуйте другие: collect, toSet, first, single (потребуется изменить билдер)
+     */
     @Test
     fun toListTermination(): Unit = runBlocking {
         val list = flow {
@@ -111,24 +147,30 @@ class Ex1FlowOperatorsTest {
         println("List: $list")
     }
 
+    /**
+     * Работа с бесконечными билдерами flow
+     */
     @Test
-    fun toList2(): Unit = runBlocking {
+    fun infiniteBuilder(): Unit = runBlocking {
         val list = flow {
             var index = 0
-            // If there is an infinite loop here, while (true)
-            // then we will never output to the console
-            //  println("List: $list")
-            while (index < 10) {
+            // здесь бесконечный цикл, не переполнения не будет из-за take
+            while (true) {
                 emit(index++)
                 delay(100)
             }
         }
             .onEach { println("$it") }
+            .take(10) // Попробуйте поменять аргумент и понаблюдайте за размером результирующего списка
             .toList()
 
         println("List: $list")
     }
 
+    /**
+     * Демонстрация sample и debounce.
+     * Попробуйте различные аргументы этих функций.
+     */
     @OptIn(FlowPreview::class)
     @Test
     fun sampleDebounce() = runBlocking {
@@ -136,7 +178,7 @@ class Ex1FlowOperatorsTest {
             repeat(20) {
                 delay(100)
                 emit(it)
-                delay(400)
+                delay(400) // Посмотрите как поменяется поведение при отключении эти двух строк.
                 emit("${it}a")
             }
         }
@@ -150,6 +192,7 @@ class Ex1FlowOperatorsTest {
         f.debounce(200).collect {
             print(" $it")
         }
+        println()
     }
 
 }

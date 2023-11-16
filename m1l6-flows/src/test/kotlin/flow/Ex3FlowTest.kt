@@ -6,6 +6,11 @@ import org.junit.jupiter.api.Test
 import java.time.Instant
 import kotlin.random.Random
 
+/**
+ * Повышенная сложность.
+ * Поизучайте различные виды реализации получения данных: flow, блокирующий (flow + Thread.sleep), callback.
+ * Посмотрите как отражается на производительности реализация.
+ */
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class Ex3FlowTest {
     private fun detectors() : List<Detector> {

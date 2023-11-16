@@ -7,6 +7,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
+/**
+ * Deprecated. Каналы более не применяются.
+ */
 class Ex1ChannelTest {
 
     @Test
