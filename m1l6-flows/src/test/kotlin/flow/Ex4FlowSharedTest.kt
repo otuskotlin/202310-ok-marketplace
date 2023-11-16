@@ -2,7 +2,7 @@ package ru.otus.otuskotlin.m1l6.flow
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 
 class Ex4FlowSharedTest {
 
