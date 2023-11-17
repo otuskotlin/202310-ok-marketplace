@@ -7,3 +7,5 @@
 !**/src/*Test/**/build/
 
 /.idea/
+
+/kotlin-js-store
