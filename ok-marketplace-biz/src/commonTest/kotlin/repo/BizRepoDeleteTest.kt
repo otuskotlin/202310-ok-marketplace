@@ -1,10 +1,10 @@
 package ru.otus.otuskotlin.marketplace.biz.repo
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import repo.repoNotFoundTest
 import ru.otus.otuskotlin.marketplace.backend.repo.tests.AdRepositoryMock
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.biz.addTestPrincipal
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import ru.otus.otuskotlin.marketplace.common.models.*
@@ -13,7 +13,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class BizRepoDeleteTest {
 
     private val userId = MkplUserId("321")
@@ -64,6 +63,7 @@ class BizRepoDeleteTest {
             workMode = MkplWorkMode.TEST,
             adRequest = adToUpdate,
         )
+        ctx.addTestPrincipal(userId)
         processor.exec(ctx)
         assertEquals(MkplState.FINISHING, ctx.state)
         assertTrue { ctx.errors.isEmpty() }

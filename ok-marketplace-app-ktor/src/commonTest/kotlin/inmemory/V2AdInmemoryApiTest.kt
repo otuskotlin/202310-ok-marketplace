@@ -9,6 +9,8 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2Mapper
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
+import ru.otus.otuskotlin.marketplace.app.ktor.auth.addAuth
+import ru.otus.otuskotlin.marketplace.app.common.AuthConfig
 import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.ktor.module
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
@@ -43,6 +45,8 @@ class V2AdInmemoryApiTest {
         visibility = MkplVisibility.VISIBLE_PUBLIC
     }
 
+    private val userId = initAd.ownerId
+
     @Test
     fun create() = v2TestApplication(AdRepoInMemory(randomUuid = { uuidNew })) { client ->
         val createAd = AdCreateObject(
@@ -61,6 +65,7 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdCreateResponse
@@ -83,6 +88,7 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdReadResponse
@@ -110,6 +116,7 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdUpdateResponse
@@ -135,6 +142,7 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdDeleteResponse
@@ -153,6 +161,7 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdSearchResponse
@@ -174,6 +183,7 @@ class V2AdInmemoryApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdOffersResponse

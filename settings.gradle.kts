@@ -75,3 +75,5 @@ include("ok-marketplace-repo-in-memory")
 include("ok-marketplace-repo-postgresql")
 include("ok-marketplace-repo-cassandra")
 include("ok-marketplace-repo-gremlin")
+
+include("ok-marketplace-auth")

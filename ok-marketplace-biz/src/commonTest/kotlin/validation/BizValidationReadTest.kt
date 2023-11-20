@@ -22,4 +22,3 @@ class BizValidationReadTest {
     @Test fun badFormatId() = validationIdFormat(command, processor)
 
 }
-

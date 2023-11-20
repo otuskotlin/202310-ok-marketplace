@@ -31,4 +31,3 @@ class BizValidationDeleteTest {
     @Test fun badFormatLock() = validationLockFormat(command, processor)
 
 }
-

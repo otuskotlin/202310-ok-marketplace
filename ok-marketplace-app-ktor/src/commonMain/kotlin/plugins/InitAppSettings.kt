@@ -19,5 +19,6 @@ fun Application.initAppSettings(): MkplAppSettings {
             repoProd = getDatabaseConf(AdDbType.PROD),
             repoStub = AdRepoStub(),
         ),
+        auth = initAppAuth(),
     )
 }

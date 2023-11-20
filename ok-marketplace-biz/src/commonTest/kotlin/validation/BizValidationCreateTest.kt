@@ -28,4 +28,3 @@ class BizValidationCreateTest {
     @Test fun badSymbolsDescription() = validationDescriptionSymbols(command, processor)
 
 }
-

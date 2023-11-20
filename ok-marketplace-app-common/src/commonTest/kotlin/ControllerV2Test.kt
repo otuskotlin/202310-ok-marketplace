@@ -24,8 +24,9 @@ class ControllerV2Test {
     )
 
     private val appSettings: IMkplAppSettings = object : IMkplAppSettings {
-        override val processor: MkplAdProcessor = MkplAdProcessor()
         override val corSettings: MkplCorSettings = MkplCorSettings()
+        override val auth: AuthConfig = AuthConfig.NONE
+        override val processor: MkplAdProcessor = MkplAdProcessor(corSettings)
     }
 
     private suspend fun createAdSpring(request: AdCreateRequest): AdCreateResponse =

@@ -41,4 +41,3 @@ class BizValidationUpdateTest {
     @Test fun badFormatLock() = validationLockFormat(command, processor)
 
 }
-

@@ -2,6 +2,8 @@ package ru.otus.otuskotlin.marketplace.common
 
 import kotlinx.datetime.Instant
 import ru.otus.otuskotlin.marketplace.common.models.*
+import ru.otus.otuskotlin.marketplace.common.permissions.MkplPrincipalModel
+import ru.otus.otuskotlin.marketplace.common.permissions.MkplUserPermissions
 import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 import ru.otus.otuskotlin.marketplace.common.ws.IMkplWsSession
@@ -20,6 +22,10 @@ data class MkplContext(
     var adRepoPrepare: MkplAd = MkplAd(), // То, что готовим для сохранения в БД
     var adRepoDone: MkplAd = MkplAd(),  // Результат, полученный из БД
     var adsRepoDone: MutableList<MkplAd> = mutableListOf(),
+
+    var principal: MkplPrincipalModel = MkplPrincipalModel.NONE,
+    val permissionsChain: MutableSet<MkplUserPermissions> = mutableSetOf(),
+    var permitted: Boolean = false,
 
     var requestId: MkplRequestId = MkplRequestId.NONE,
     var timeStart: Instant = Instant.NONE,

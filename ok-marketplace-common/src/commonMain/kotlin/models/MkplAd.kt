@@ -2,6 +2,7 @@ package ru.otus.otuskotlin.marketplace.common.models
 
 import kotlinx.datetime.Instant
 import ru.otus.otuskotlin.marketplace.common.NONE
+import ru.otus.otuskotlin.marketplace.common.permissions.MkplPrincipalRelations
 import ru.otus.otuskotlin.marketplace.common.statemachine.SMAdStates
 
 data class MkplAd(
@@ -17,6 +18,7 @@ data class MkplAd(
     var visibility: MkplVisibility = MkplVisibility.NONE,
     var productId: MkplProductId = MkplProductId.NONE,
     var lock: MkplAdLock = MkplAdLock.NONE,
+    var principalRelations: Set<MkplPrincipalRelations> = emptySet(),
     val permissionsClient: MutableSet<MkplAdPermissionClient> = mutableSetOf()
 ) {
     fun deepCopy(): MkplAd = copy(

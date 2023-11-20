@@ -6,6 +6,7 @@ import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
+import ru.otus.otuskotlin.markeplace.springapp.fakeMkplPrincipal
 import ru.otus.otuskotlin.markeplace.springapp.models.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.api.v1.apiV1Mapper
 import ru.otus.otuskotlin.marketplace.api.v1.models.IRequest
@@ -24,7 +25,10 @@ class WsAdHandlerV1(private val appSettings: MkplAppSettings) : TextWebSocketHan
         sessions.add(session)
 
         appSettings.controllerHelper(
-            { command = MkplCommand.INIT },
+            {
+                command = MkplCommand.INIT
+                principal = fakeMkplPrincipal()
+            },
             { session.send(toTransportInit()) },
             WsAdHandlerV1::class,
             "ws-v1-init"
@@ -37,6 +41,7 @@ class WsAdHandlerV1(private val appSettings: MkplAppSettings) : TextWebSocketHan
             {
                 val request = apiV1Mapper.readValue(message.payload, IRequest::class.java)
                 fromTransport(request)
+                principal = fakeMkplPrincipal()
             },
             { session.send(toTransportAd()) },
             WsAdHandlerV1::class,

@@ -1,10 +1,13 @@
 package ru.otus.otuskotlin.marketplace.app.ktor.v1
 
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import ru.otus.otuskotlin.marketplace.api.v1.models.IRequest
 import ru.otus.otuskotlin.marketplace.api.v1.models.IResponse
+import ru.otus.otuskotlin.marketplace.app.base.toModel
 import ru.otus.otuskotlin.marketplace.app.common.controllerHelper
 import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.mappers.v1.fromTransport
@@ -16,8 +19,11 @@ suspend inline fun <reified Q : IRequest, @Suppress("unused") reified R : IRespo
     clazz: KClass<*>,
     logId: String,
 ) = appSettings.controllerHelper(
-    { fromTransport(receive<Q>()) },
+    {
+        principal = this@processV1.request.call.principal<JWTPrincipal>().toModel()
+        fromTransport(receive<Q>())
+    },
     { respond(toTransportAd()) },
     clazz,
-    logId
+    logId,
 )

@@ -6,4 +6,5 @@ import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 interface IMkplAppSettings {
     val processor: MkplAdProcessor
     val corSettings: MkplCorSettings
+    val auth: AuthConfig
 }
