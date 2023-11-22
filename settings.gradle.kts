@@ -1,12 +1,13 @@
 rootProject.name = "ok-marketplace-202310"
 
 pluginManagement {
-    plugins {
-        val kotlinVersion: String by settings
+    val kotlinVersion: String by settings
 
-        kotlin("jvm") version kotlinVersion apply false
+    plugins {
+        kotlin("jvm") version kotlinVersion
     }
 }
+
 
 include("m1l1-quickstart")
 include("m1l2-basic")
