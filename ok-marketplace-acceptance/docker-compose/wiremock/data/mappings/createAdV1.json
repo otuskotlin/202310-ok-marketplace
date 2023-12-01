@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/v1/ad/create"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "result": "SUCCESS"
+    }
+  }
+}
