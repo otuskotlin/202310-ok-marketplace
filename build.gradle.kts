@@ -1,10 +1,17 @@
-plugins {
-    kotlin("jvm") version "1.9.10"
-}
-
-group = "ru.otus.otuskotlin.marketplace"
+group = "com.wizy"
 version = "0.0.1"
 
-repositories {
-    mavenCentral()
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
+    tasks.withType<Wrapper> {
+        gradleVersion = "8.5"
+    }
 }
