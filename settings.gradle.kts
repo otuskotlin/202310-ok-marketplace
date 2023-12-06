@@ -3,10 +3,17 @@ rootProject.name = "ok-marketplace-202310"
 pluginManagement {
     val kotlinVersion: String by settings
     val kotestVersion: String by settings
+    val openapiVersion: String by settings
+    val cwpGeneratorVersioin: String by settings
 
     plugins {
         kotlin("jvm") version kotlinVersion
+        kotlin("multiplatform") version kotlinVersion
+        kotlin("plugin.serialization") version kotlinVersion apply false
+
         id("io.kotest.multiplatform") version kotestVersion apply false
+        id("org.openapi.generator") version openapiVersion apply false
+        id("com.crowdproj.generator") version cwpGeneratorVersioin apply false
     }
 }
 
@@ -18,6 +25,9 @@ pluginManagement {
 //include("m1l5-coroutines")
 //include("m1l6-flows")
 //include("m1l7-kmp")
-include("m2l3-testing")
+//include("m2l3-testing")
 
 include("ok-marketplace-acceptance")
+
+include("ok-marketplace-api-v1-jackson")
+include("ok-marketplace-api-v2-kmp")
