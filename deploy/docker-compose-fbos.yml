@@ -24,7 +24,7 @@ services:
         fluentd-address: localhost:24224
         # теги используются для маршрутизации лог-сообщений, тема
         # маршрутизации будет рассмотрена ниже
-        tag: app.nginx
+        tag: app.logs
 
   fluent-bit:
     container_name: fluent-bit
