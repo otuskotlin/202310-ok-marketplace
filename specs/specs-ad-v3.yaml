@@ -1,0 +1,192 @@
+openapi: 3.0.3
+info:
+  title: Marketplace ${VERSION_APP}
+  description: This is a place where sellers and buyers meat each other
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 3.0.0
+servers:
+  - url: http://localhost:8080/v2
+tags:
+  - name: ad
+    description: Объявление (о покупке или продаже)
+paths:
+  /ad/edit:
+    post:
+      tags:
+        - ad
+      summary: Collaborative ad editing
+      operationId: adEdit
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdEditCommand'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdEditReceive'
+components:
+  schemas:
+    AdEditCommand:
+      type: object
+      properties:
+        requestId:
+          $ref: '#/components/schemas/RequestId'
+          description: Идентификатор запроса на изменение
+        command:
+          $ref: '#/components/schemas/AdCommand'
+
+    AdCommand:
+      type: object
+      properties:
+        version:
+          $ref: '#/components/schemas/AdVersion'
+          description: Версия документа, которую модифицирует команда
+        field:
+          $ref: '#/components/schemas/AdFields'
+          description: Поле, которое редактируется
+        command:
+          type: string
+          description: Тип изменения
+      discriminator:
+        propertyName: command
+        mapping:
+          insert: '#/components/schemas/AdEditCommandInsert'
+          delete: '#/components/schemas/AdEditCommandDelete'
+          errors: '#/components/schemas/AdEditCommandErrors'
+
+    AdFields:
+      type: string
+      enum:
+        - title
+        - description
+        - adType
+        - visibility
+        - productId
+
+    AdEditCommandInsert:
+      allOf:
+        - $ref: '#/components/schemas/AdEditCommand'
+        - type: object
+          properties:
+            pos:
+              type: integer
+            value:
+              type: string
+
+    AdEditCommandDelete:
+      allOf:
+        - $ref: '#/components/schemas/AdEditCommand'
+        - type: object
+          properties:
+            posF:
+              type: integer
+            posT:
+              type: integer
+
+    AdEditCommandErrors:
+      allOf:
+        - $ref: '#/components/schemas/AdEditCommand'
+        - type: object
+          properties:
+            errors:
+              type: array
+              items:
+                $ref: '#/components/schemas/Error'
+            posT:
+              type: integer
+
+    AdEditReceive:
+      type: object
+      properties:
+        commands:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdCommand'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        group:
+          type: string
+        field:
+          type: string
+        message:
+          type: string
+    ResponseResult:
+      type: string
+      enum:
+        - success
+        - error
+    RequestId:
+      type: string
+      description: Идентификатор запроса
+    UserId:
+      type: string
+      description: Идентификатор пользователя
+    AdId:
+      type: string
+      description: Идентификатор объявления
+    AdLock:
+      type: string
+      description: Версия оптимистичной блокировки
+    ProductId:
+      type: string
+      description: Идентификатор модели продукта, к которому относится объявление
+    AdVersion:
+      type: integer
+      description: Версия документа
+    DealSide:
+      type: string
+      description: 'Сторона сделки: спрос или предложение'
+      enum:
+        - demand
+        - supply
+    AdVisibility:
+      type: string
+      description: >-
+        Тип видимости объявления. Возможные значения: видит только владелец,
+        только зарегистрированный в системе пользователь, видимо всем
+      enum:
+        - ownerOnly
+        - registeredOnly
+        - public
+    AdRequestDebugMode:
+      type: string
+      enum:
+        - prod
+        - test
+        - stub
+    AdRequestDebug:
+      type: object
+      properties:
+        debug:
+          $ref: '#/components/schemas/AdDebug'
+    AdDebug:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/AdRequestDebugMode'
+        stub:
+          $ref: '#/components/schemas/AdRequestDebugStubs'
+    AdRequestDebugStubs:
+      type: string
+      description: Перечисления всех стабов
+      enum:
+        - success
+        - notFound
+        - badId
+        - badTitle
+        - badDescription
+        - badVisibility
+        - cannotDelete
+        - badSearchString
