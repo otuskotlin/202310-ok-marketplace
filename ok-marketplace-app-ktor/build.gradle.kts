@@ -23,7 +23,7 @@ application {
 
 ktor {
     docker {
-        localImageName.set(project.name + "-ktor")
+        localImageName.set(project.name)
         imageTag.set(project.version.toString())
         jreVersion.set(JavaVersion.VERSION_17)
     }
@@ -55,13 +55,11 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
                 implementation(ktorServer("core")) 
                 implementation(ktorServer("cio"))
-                implementation(ktorServer("auth")) 
-                implementation(ktorServer("auto-head-response")) 
+                implementation(ktorServer("auto-head-response"))
                 implementation(ktorServer("caching-headers")) 
                 implementation(ktorServer("cors")) 
                 implementation(ktorServer("config-yaml")) 
                 implementation(ktorServer("content-negotiation")) 
-                implementation(ktorServer("auth"))
 
                 implementation(project(":ok-marketplace-common"))
                 implementation(project(":ok-marketplace-biz"))

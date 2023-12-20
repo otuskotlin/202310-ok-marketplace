@@ -1,13 +1,12 @@
 package ru.otus.otuskotlin.marketplace.app.ktor.stub
 
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
-import kotlinx.serialization.encodeToString
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2Mapper
 import ru.otus.otuskotlin.marketplace.api.v2.models.*
 import ru.otus.otuskotlin.marketplace.app.ktor.module
@@ -33,11 +32,9 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
-        val responseJson = response.bodyAsText()
-        val responseObj = apiV2Mapper.decodeFromString<AdCreateResponse>(responseJson)
+        val responseObj = response.body<AdCreateResponse>()
         assertEquals(200, response.status.value)
         assertEquals("666", responseObj.ad?.id)
     }
@@ -54,11 +51,9 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
-        val responseJson = response.bodyAsText()
-        val responseObj = apiV2Mapper.decodeFromString<AdReadResponse>(responseJson)
+        val responseObj = response.body<AdReadResponse>()
         assertEquals(200, response.status.value)
         assertEquals("666", responseObj.ad?.id)
     }
@@ -81,11 +76,9 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
-        val responseJson = response.bodyAsText()
-        val responseObj = apiV2Mapper.decodeFromString<AdUpdateResponse>(responseJson)
+        val responseObj = response.body<AdUpdateResponse>()
         assertEquals(200, response.status.value)
         assertEquals("666", responseObj.ad?.id)
     }
@@ -105,11 +98,9 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
-        val responseJson = response.bodyAsText()
-        val responseObj = apiV2Mapper.decodeFromString<AdDeleteResponse>(responseJson)
+        val responseObj = response.body<AdDeleteResponse>()
         assertEquals(200, response.status.value)
         assertEquals("666", responseObj.ad?.id)
     }
@@ -126,11 +117,9 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
-        val responseJson = response.bodyAsText()
-        val responseObj = apiV2Mapper.decodeFromString<AdSearchResponse>(responseJson)
+        val responseObj = response.body<AdSearchResponse>()
         assertEquals(200, response.status.value)
         assertEquals("d-666-01", responseObj.ads?.first()?.id)
     }
@@ -149,11 +138,9 @@ class V2AdStubApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
-            val requestJson = apiV2Mapper.encodeToString(requestObj)
-            setBody(requestJson)
+            setBody(requestObj)
         }
-        val responseJson = response.bodyAsText()
-        val responseObj = apiV2Mapper.decodeFromString<AdOffersResponse>(responseJson)
+        val responseObj = response.body<AdOffersResponse>()
         assertEquals(200, response.status.value)
         assertEquals("s-666-01", responseObj.ads?.first()?.id)
     }
