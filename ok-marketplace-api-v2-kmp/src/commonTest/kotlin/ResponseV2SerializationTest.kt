@@ -32,7 +32,7 @@ class ResponseV2SerializationTest {
     @Test
     fun deserialize() {
         val json = apiV2Mapper.encodeToString(response)
-        val obj = apiV2Mapper.decodeFromString(json) as AdCreateResponse
+        val obj = apiV2Mapper.decodeFromString<IResponse>(json) as AdCreateResponse
 
         assertEquals(response, obj)
     }
