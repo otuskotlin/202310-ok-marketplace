@@ -131,7 +131,7 @@ tasks {
         dependsOn(linuxX64ProcessResources)
         group = "docker"
 //        destFile.set(dockerLinuxX64Dir)
-        from(Dockerfile.From("ubuntu:23.04").withPlatform("linux/amd64"))
+        from(Dockerfile.From("ubuntu:20.04").withPlatform("linux/amd64"))
         doFirst {
             copy {
                 from(nativeFileX64)
@@ -141,7 +141,7 @@ tasks {
         }
         copyFile(nativeFileX64.name, "/app/")
         copyFile("application.yaml", "/app/")
-        exposePort(8081)
+        exposePort(8080)
         workingDir("/app")
         entryPoint("/app/${nativeFileX64.name}", "-config=./application.yaml")
     }
