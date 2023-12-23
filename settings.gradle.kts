@@ -8,6 +8,8 @@ pluginManagement {
     val springframeworkBootVersion: String by settings
     val springDependencyManagementVersion: String by settings
     val ktorVersion: String by settings
+    val bmuschkoVersion: String by settings
+    val pluginShadow: String by settings
 
     plugins {
         kotlin("jvm") version kotlinVersion
@@ -19,10 +21,12 @@ pluginManagement {
         kotlin("plugin.spring") version kotlinVersion apply false
 
         id("io.ktor.plugin") version ktorVersion apply false
+        id("com.bmuschko.docker-remote-api") version bmuschkoVersion apply false
 
         id("io.kotest.multiplatform") version kotestVersion apply false
         id("org.openapi.generator") version openapiVersion apply false
         id("com.crowdproj.generator") version cwpGeneratorVersioin apply false
+        id("com.github.johnrengelman.shadow") version pluginShadow apply false
     }
 }
 
@@ -51,3 +55,4 @@ include("ok-marketplace-biz")
 
 include("ok-marketplace-app-spring")
 include("ok-marketplace-app-ktor")
+include("ok-marketplace-app-serverless")
