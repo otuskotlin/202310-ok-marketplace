@@ -1,3 +1,9 @@
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+import io.ktor.plugin.features.*
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
+
 val ktorVersion: String by project
 val logbackVersion: String by project
 val serializationVersion: String by project
@@ -15,6 +21,7 @@ plugins {
     kotlin("plugin.serialization")
     kotlin("multiplatform")
     id("io.ktor.plugin")
+    id("com.bmuschko.docker-remote-api")
 }
 
 application {
@@ -22,6 +29,7 @@ application {
 }
 
 ktor {
+    configureNativeImage(project)
     docker {
         localImageName.set(project.name)
         imageTag.set(project.version.toString())
@@ -113,6 +121,52 @@ kotlin {
     }
 }
 
-tasks.withType<Copy> {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+tasks {
+    val linkReleaseExecutableLinuxX64 by getting(KotlinNativeLink::class)
+    val nativeFileX64 = linkReleaseExecutableLinuxX64.binary.outputFile
+    val linuxX64ProcessResources by getting(ProcessResources::class)
+
+    val dockerDockerfileX64 by creating(Dockerfile::class) {
+        dependsOn(linkReleaseExecutableLinuxX64)
+        dependsOn(linuxX64ProcessResources)
+        group = "docker"
+//        destFile.set(dockerLinuxX64Dir)
+        from(Dockerfile.From("ubuntu:23.04").withPlatform("linux/amd64"))
+        doFirst {
+            copy {
+                from(nativeFileX64)
+                from(linuxX64ProcessResources.destinationDir)
+                into("${this@creating.destDir.get()}")
+            }
+        }
+        copyFile(nativeFileX64.name, "/app/")
+        copyFile("application.yaml", "/app/")
+        exposePort(8081)
+        workingDir("/app")
+        entryPoint("/app/${nativeFileX64.name}", "-config=./application.yaml")
+    }
+    val registryUser: String? = System.getenv("CONTAINER_REGISTRY_USER")
+    val registryPass: String? = System.getenv("CONTAINER_REGISTRY_PASS")
+    val registryHost: String? = System.getenv("CONTAINER_REGISTRY_HOST")
+    val registryPref: String? = System.getenv("CONTAINER_REGISTRY_PREF")
+    val imageName = registryPref?.let { "$it/${project.name}" } ?: project.name
+
+    val dockerBuildX64Image by creating(DockerBuildImage::class) {
+        group = "docker"
+        dependsOn(dockerDockerfileX64)
+//        inputDir.set(dockerLinuxX64Dir.parentFile)
+        images.add("$imageName-x64:${rootProject.version}")
+        images.add("$imageName-x64:latest")
+        platform.set("linux/amd64")
+    }
+    val dockerPushX64Image by creating(DockerPushImage::class) {
+        group = "docker"
+        dependsOn(dockerBuildX64Image)
+        images.set(dockerBuildX64Image.images)
+        registryCredentials {
+            username.set(registryUser)
+            password.set(registryPass)
+            url.set("https://$registryHost/v1/")
+        }
+    }
 }

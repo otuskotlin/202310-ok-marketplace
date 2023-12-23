@@ -11,7 +11,7 @@ import ru.otus.otuskotlin.marketplace.api.v2.apiV2Mapper
 import ru.otus.otuskotlin.marketplace.app.ktor.v2.v2Ad
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 
-fun main(args: Array<String>) = io.ktor.server.cio.EngineMain.main(args)
+//fun main(args: Array<String>) = io.ktor.server.cio.EngineMain.main(args)
 
 fun Application.module(processor: MkplAdProcessor = MkplAdProcessor()) {
     install(CORS) {
