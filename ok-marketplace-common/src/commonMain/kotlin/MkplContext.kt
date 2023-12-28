@@ -3,6 +3,7 @@ package ru.otus.otuskotlin.marketplace.common
 import kotlinx.datetime.Instant
 import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
+import ru.otus.otuskotlin.marketplace.common.ws.IMkplWsSession
 
 data class MkplContext(
     var command: MkplCommand = MkplCommand.NONE,
@@ -18,4 +19,7 @@ data class MkplContext(
     var adFilterRequest: MkplAdFilter = MkplAdFilter(),
     var adResponse: MkplAd = MkplAd(),
     var adsResponse: MutableList<MkplAd> = mutableListOf(),
+
+    //ws
+    var session: IMkplWsSession = IMkplWsSession.NONE
 )

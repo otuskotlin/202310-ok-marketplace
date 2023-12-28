@@ -68,6 +68,7 @@ kotlin {
                 implementation(ktorServer("cors")) 
                 implementation(ktorServer("config-yaml")) 
                 implementation(ktorServer("content-negotiation")) 
+                implementation(ktorServer("websockets"))
 
                 implementation(project(":ok-marketplace-common"))
                 implementation(project(":ok-marketplace-biz"))
@@ -93,6 +94,7 @@ kotlin {
 
                 implementation(ktorServer("test-host"))
                 implementation(ktorClient("content-negotiation"))
+                implementation(ktorClient("websockets"))
             }
         }
 

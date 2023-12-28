@@ -8,25 +8,29 @@ import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
 import org.slf4j.event.Level
 import ru.otus.otuskotlin.marketplace.api.v1.apiV1Mapper
+import ru.otus.otuskotlin.marketplace.app.ktor.base.KtorWsSessionRepo
 import ru.otus.otuskotlin.marketplace.app.ktor.v1.v1Ad
+import ru.otus.otuskotlin.marketplace.app.ktor.v1.wsHandlerV1
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 
 // function with config (application.conf)
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
-fun Application.moduleJvm() {
-    val processor = MkplAdProcessor()
-
+fun Application.moduleJvm(
+    processor: MkplAdProcessor = MkplAdProcessor(),
+    wsRepo: KtorWsSessionRepo = KtorWsSessionRepo()
+) {
     install(CachingHeaders)
     install(DefaultHeaders)
     install(AutoHeadResponse)
     install(CallLogging) {
         level = Level.INFO
     }
-    module(processor = processor)
+    module(processor = processor, wsRepo)
 
     routing {
         route("v1") {
@@ -38,6 +42,9 @@ fun Application.moduleJvm() {
             }
 
             v1Ad(processor)
+            webSocket("/ws") {
+                wsHandlerV1(processor, wsRepo)
+            }
         }
     }
 }
