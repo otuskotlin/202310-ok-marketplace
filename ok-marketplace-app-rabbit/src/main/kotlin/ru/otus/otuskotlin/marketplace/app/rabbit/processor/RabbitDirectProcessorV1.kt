@@ -41,7 +41,7 @@ class RabbitDirectProcessorV1(
         }
     }
 
-    override fun Channel.onError(e: Throwable) {
+    override fun Channel.onError(e: Throwable, delivery: Delivery) {
         val context = MkplContext()
         e.printStackTrace()
         context.state = MkplState.FAILING

@@ -46,7 +46,8 @@ internal class RabbitMqTest {
 //            RabbitMQContainer("rabbitmq:3-management").apply {
 //            Этот образ минимальный и не содержит панель управления
             RabbitMQContainer("rabbitmq:latest").apply {
-                withExposedPorts(5672, 15672)
+//                withExposedPorts(5672, 15672) // Для 3-management
+                withExposedPorts(5672)
             }
         }
 

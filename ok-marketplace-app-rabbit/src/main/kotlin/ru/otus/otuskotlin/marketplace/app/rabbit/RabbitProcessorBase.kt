@@ -1,11 +1,6 @@
 package ru.otus.otuskotlin.marketplace.app.rabbit
 
-import com.rabbitmq.client.CancelCallback
-import com.rabbitmq.client.Channel
-import com.rabbitmq.client.Connection
-import com.rabbitmq.client.ConnectionFactory
-import com.rabbitmq.client.DeliverCallback
-import com.rabbitmq.client.Delivery
+import com.rabbitmq.client.*
 import kotlinx.coroutines.*
 import ru.otus.otuskotlin.marketplace.app.rabbit.config.RabbitConfig
 import ru.otus.otuskotlin.marketplace.app.rabbit.config.RabbitExchangeConfiguration
@@ -51,17 +46,22 @@ abstract class RabbitProcessorBase @OptIn(ExperimentalCoroutinesApi::class) cons
     /**
      * Обработка ошибок
      */
-    protected abstract fun Channel.onError(e: Throwable)
+    protected abstract fun Channel.onError(e: Throwable, delivery: Delivery)
 
     /**
      * Callback, который вызывается при доставке сообщения консьюмеру
      */
-    private fun Channel.getDeliveryCallback(): DeliverCallback = DeliverCallback { _, message ->
+    private fun Channel.getDeliveryCallback(): DeliverCallback = DeliverCallback { _, delivery: Delivery ->
         runBlocking {
             kotlin.runCatching {
-                processMessage(message)
+//                val routingKey: String = delivery.envelope.routingKey
+//                val contentType: String = delivery.properties.contentType
+                val deliveryTag: Long = delivery.envelope.deliveryTag
+                processMessage(delivery)
+                // Ручное подтверждение завершения обработки сообщения
+                this@getDeliveryCallback.basicAck(deliveryTag, false)
             }.onFailure {
-                onError(it)
+                onError(it, delivery)
             }
         }
     }
@@ -85,7 +85,7 @@ abstract class RabbitProcessorBase @OptIn(ExperimentalCoroutinesApi::class) cons
             // связываем обменник с очередью по ключу (сообщения будут поступать в данную очередь с данного обменника при совпадении ключа)
             queueBind(processorConfig.queue, processorConfig.exchange, processorConfig.keyIn)
             // запуск консьюмера с автоотправкой подтверждение при получении сообщения
-            basicConsume(processorConfig.queue, true, processorConfig.consumerTag, deliverCallback, cancelCallback)
+            basicConsume(processorConfig.queue, false, processorConfig.consumerTag, deliverCallback, cancelCallback)
 
             while (isOpen) {
                 kotlin.runCatching {
