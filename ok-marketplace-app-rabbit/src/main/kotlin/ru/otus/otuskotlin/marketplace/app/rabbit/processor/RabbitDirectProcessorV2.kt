@@ -2,10 +2,10 @@ package ru.otus.otuskotlin.marketplace.app.rabbit.processor
 
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Delivery
-import kotlinx.datetime.Clock
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2RequestDeserialize
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2ResponseSerialize
 import ru.otus.otuskotlin.marketplace.api.v2.models.IRequest
+import ru.otus.otuskotlin.marketplace.app.common.controllerHelper
 import ru.otus.otuskotlin.marketplace.app.rabbit.RabbitProcessorBase
 import ru.otus.otuskotlin.marketplace.app.rabbit.config.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.rabbit.config.RabbitExchangeConfiguration
@@ -22,23 +22,21 @@ class RabbitDirectProcessorV2(
 ) : RabbitProcessorBase(appSettings.config, processorConfig) {
 
     override suspend fun Channel.processMessage(message: Delivery) {
-        val context = MkplContext()
-        context.apply {
-            timeStart = Clock.System.now()
-        }
-
-        apiV2RequestDeserialize<IRequest>(String(message.body)).also {
-            println("TYPE: ${it::class.java.simpleName}")
-            context.fromTransport(it)
-        }
-
-        val response = appSettings.processor.exec(context).run { context.toTransportAd() }
-        apiV2ResponseSerialize(response).also {
-            println("Publishing $response to ${processorConfig.exchange} exchange for keyOut ${processorConfig.keyOut}")
-            basicPublish(processorConfig.exchange, processorConfig.keyOut, null, it.toByteArray())
-        }.also {
-            println("published")
-        }
+        appSettings.controllerHelper(
+            {
+                apiV2RequestDeserialize<IRequest>(String(message.body)).also {
+                    println("TYPE: ${it::class.java.simpleName}")
+                    fromTransport(it)
+                }
+            },
+            {
+                val response = toTransportAd()
+                apiV2ResponseSerialize(response).also {
+                    println("Publishing $response to ${processorConfig.exchange} exchange for keyOut ${processorConfig.keyOut}")
+                    basicPublish(processorConfig.exchange, processorConfig.keyOut, null, it.toByteArray())
+                }
+            }
+        )
     }
 
     override fun Channel.onError(e: Throwable, delivery: Delivery) {

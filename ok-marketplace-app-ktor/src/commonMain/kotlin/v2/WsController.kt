@@ -5,56 +5,51 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
-import ru.otus.otuskotlin.marketplace.api.v2.apiV2Mapper
+import ru.otus.otuskotlin.marketplace.api.v2.apiV2RequestDeserialize
 import ru.otus.otuskotlin.marketplace.api.v2.apiV2ResponseSerialize
 import ru.otus.otuskotlin.marketplace.api.v2.models.IRequest
-import ru.otus.otuskotlin.marketplace.app.ktor.base.KtorWsSessionRepo
+import ru.otus.otuskotlin.marketplace.app.common.controllerHelper
+import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.ktor.base.KtorWsSessionV2
-import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
-import ru.otus.otuskotlin.marketplace.common.MkplContext
-import ru.otus.otuskotlin.marketplace.common.helpers.addError
-import ru.otus.otuskotlin.marketplace.common.helpers.asMkplError
-import ru.otus.otuskotlin.marketplace.common.models.MkplWorkMode
+import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
 import ru.otus.otuskotlin.marketplace.mappers.v2.fromTransport
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportAd
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportInit
 
-suspend fun WebSocketSession.wsHandlerV2(processor: MkplAdProcessor, sessions: KtorWsSessionRepo) = with(KtorWsSessionV2(this)) {
+suspend fun WebSocketSession.wsHandlerV2(appSettings: MkplAppSettings) = with(KtorWsSessionV2(this)) {
+    val sessions = appSettings.corSettings.wsSessions
     sessions.add(this)
 
     // Handle init request
-    run {
-        val ctx = MkplContext(session = this)
-        ctx.workMode = MkplWorkMode.STUB
-        processor.exec(ctx)
-
-        val init = apiV2ResponseSerialize(ctx.toTransportInit())
-        outgoing.send(Frame.Text(init))
-    }
+    appSettings.controllerHelper(
+        { command = MkplCommand.INIT },
+        { outgoing.send(Frame.Text(apiV2ResponseSerialize(toTransportInit()))) }
+    )
 
     // Handle flow
     incoming.receiveAsFlow().mapNotNull { it ->
         val frame = it as? Frame.Text ?: return@mapNotNull
-
-        val jsonStr = frame.readText()
-        val context = MkplContext(session = this)
-
         // Handle without flow destruction
         try {
-            val request = apiV2Mapper.decodeFromString<IRequest>(jsonStr)
-            context.fromTransport(request)
-            processor.exec(context)
+            appSettings.controllerHelper(
+                { fromTransport(apiV2RequestDeserialize<IRequest>(frame.readText())) },
+                {
+                    val result = apiV2ResponseSerialize(toTransportAd())
+                    // If change request, response is sent to everyone
+                    outgoing.send(Frame.Text(result))
+                }
+            )
 
-            val result = apiV2ResponseSerialize(context.toTransportAd())
-
-            outgoing.send(Frame.Text(result))
         } catch (_: ClosedReceiveChannelException) {
             sessions.clearAll()
-        } catch (t: Throwable) {
-            context.addError(t.asMkplError())
-
-            val result = apiV2ResponseSerialize(context.toTransportInit())
-            outgoing.send(Frame.Text(result))
+        } catch (e: Throwable) {
+            println("FFF")
         }
+
+        // Handle finish request
+        appSettings.controllerHelper(
+            { command = MkplCommand.FINISH },
+            { }
+        )
     }.collect()
 }

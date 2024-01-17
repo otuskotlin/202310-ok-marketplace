@@ -12,61 +12,63 @@ fun MkplContext.toTransportAd(): IResponse = when (val cmd = command) {
     MkplCommand.DELETE -> toTransportDelete()
     MkplCommand.SEARCH -> toTransportSearch()
     MkplCommand.OFFERS -> toTransportOffers()
+    MkplCommand.INIT -> toTransportInit()
+    MkplCommand.FINISH -> throw UnknownMkplCommand(cmd)
     MkplCommand.NONE -> throw UnknownMkplCommand(cmd)
 }
 
 fun MkplContext.toTransportCreate() = AdCreateResponse(
     requestId = this.requestId.asString().takeIf { it.isNotBlank() },
-    result = if (state == MkplState.RUNNING) ResponseResult.SUCCESS else ResponseResult.ERROR,
+    result = state.toResult(),
     errors = errors.toTransportErrors(),
     ad = adResponse.toTransportAd()
 )
 
 fun MkplContext.toTransportRead() = AdReadResponse(
     requestId = this.requestId.asString().takeIf { it.isNotBlank() },
-    result = if (state == MkplState.RUNNING) ResponseResult.SUCCESS else ResponseResult.ERROR,
+    result = state.toResult(),
     errors = errors.toTransportErrors(),
     ad = adResponse.toTransportAd()
 )
 
 fun MkplContext.toTransportUpdate() = AdUpdateResponse(
     requestId = this.requestId.asString().takeIf { it.isNotBlank() },
-    result = if (state == MkplState.RUNNING) ResponseResult.SUCCESS else ResponseResult.ERROR,
+    result = state.toResult(),
     errors = errors.toTransportErrors(),
     ad = adResponse.toTransportAd()
 )
 
 fun MkplContext.toTransportDelete() = AdDeleteResponse(
     requestId = this.requestId.asString().takeIf { it.isNotBlank() },
-    result = if (state == MkplState.RUNNING) ResponseResult.SUCCESS else ResponseResult.ERROR,
+    result = state.toResult(),
     errors = errors.toTransportErrors(),
     ad = adResponse.toTransportAd()
 )
 
 fun MkplContext.toTransportSearch() = AdSearchResponse(
     requestId = this.requestId.asString().takeIf { it.isNotBlank() },
-    result = if (state == MkplState.RUNNING) ResponseResult.SUCCESS else ResponseResult.ERROR,
+    result = state.toResult(),
     errors = errors.toTransportErrors(),
     ads = adsResponse.toTransportAd()
 )
 
 fun MkplContext.toTransportOffers() = AdOffersResponse(
     requestId = this.requestId.asString().takeIf { it.isNotBlank() },
-    result = if (state == MkplState.RUNNING) ResponseResult.SUCCESS else ResponseResult.ERROR,
+    result = state.toResult(),
     errors = errors.toTransportErrors(),
     ads = adsResponse.toTransportAd()
+)
+
+fun MkplContext.toTransportInit() = AdInitResponse(
+    requestId = this.requestId.asString().takeIf { it.isNotBlank() },
+    result = state.toResult(),
+    errors = errors.toTransportErrors(),
 )
 
 fun List<MkplAd>.toTransportAd(): List<AdResponseObject>? = this
     .map { it.toTransportAd() }
     .toList()
     .takeIf { it.isNotEmpty() }
-
-fun MkplContext.toTransportInit() = AdInitResponse(
-    requestId = this.requestId.asString().takeIf { it.isNotBlank() },
-    result = if (errors.isEmpty()) ResponseResult.SUCCESS else ResponseResult.ERROR,
-    errors = errors.toTransportErrors(),
-)
 
 private fun MkplAd.toTransportAd(): AdResponseObject = AdResponseObject(
     id = id.takeIf { it != MkplAdId.NONE }?.asString(),
@@ -116,3 +118,10 @@ private fun MkplError.toTransportAd() = Error(
     field = field.takeIf { it.isNotBlank() },
     message = message.takeIf { it.isNotBlank() },
 )
+
+private fun MkplState.toResult(): ResponseResult? = when (this) {
+    MkplState.RUNNING -> ResponseResult.SUCCESS
+    MkplState.FAILING -> ResponseResult.ERROR
+    MkplState.FINISHING -> ResponseResult.SUCCESS
+    MkplState.NONE -> null
+}

@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -13,7 +12,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.errors.WakeupException
-import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.app.common.controllerHelper
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import java.time.Duration
 import java.util.*
@@ -31,7 +30,6 @@ interface ConsumerStrategy {
 class AppKafkaConsumer(
     private val config: AppKafkaConfig,
     consumerStrategies: List<ConsumerStrategy>,
-    private val processor: MkplAdProcessor = MkplAdProcessor(),
     private val consumer: Consumer<String, String> = config.createKafkaConsumer(),
     private val producer: Producer<String, String> = config.createKafkaProducer()
 ) {
@@ -53,16 +51,14 @@ class AppKafkaConsumer(
 
                 records.forEach { record: ConsumerRecord<String, String> ->
                     try {
-                        val ctx = MkplContext(
-                            timeStart = Clock.System.now(),
+                        val (_, outputTopic, strategy) = topicsAndStrategyByInputTopic[record.topic()]
+                            ?: throw RuntimeException("Receive message from unknown topic ${record.topic()}")
+
+                        val resp = config.controllerHelper(
+                            { strategy.deserialize(record.value(), this) },
+                            { strategy.serialize(this) },
                         )
-                        log.info { "process ${record.key()} from ${record.topic()}:\n${record.value()}" }
-                        val (_, outputTopic, strategy) = topicsAndStrategyByInputTopic[record.topic()] ?: throw RuntimeException("Receive message from unknown topic ${record.topic()}")
-
-                        strategy.deserialize(record.value(), ctx)
-                        processor.exec(ctx)
-
-                        sendResponse(ctx, strategy, outputTopic)
+                        sendResponse(resp, outputTopic)
                     } catch (ex: Exception) {
                         log.error(ex) { "error" }
                     }
@@ -82,8 +78,7 @@ class AppKafkaConsumer(
         }
     }
 
-    private fun sendResponse(context: MkplContext, strategy: ConsumerStrategy, outputTopic: String) {
-        val json = strategy.serialize(context)
+    private fun sendResponse(json: String, outputTopic: String) {
         val resRecord = ProducerRecord(
             outputTopic,
             UUID.randomUUID().toString(),
@@ -97,5 +92,9 @@ class AppKafkaConsumer(
         process.value = false
     }
 
-    private data class TopicsAndStrategy(val inputTopic: String, val outputTopic: String, val strategy: ConsumerStrategy)
+    private data class TopicsAndStrategy(
+        val inputTopic: String,
+        val outputTopic: String,
+        val strategy: ConsumerStrategy
+    )
 }

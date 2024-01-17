@@ -11,8 +11,9 @@ dependencies {
     implementation("com.yandex.cloud:java-sdk-functions:$yandexCloudSdkVersion")
     implementation(kotlin("stdlib-jdk8"))
 
-    // transport models
     implementation(project(":ok-marketplace-common"))
+    implementation(project(":ok-marketplace-app-common"))
+    // transport models
     implementation(project(":ok-marketplace-api-v1-jackson"))
     implementation(project(":ok-marketplace-api-v2-kmp"))
     implementation(project(":ok-marketplace-mappers-v1"))
