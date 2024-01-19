@@ -16,6 +16,7 @@ kotlin {
 
                 // transport models
                 implementation(project(":ok-marketplace-common"))
+                implementation(project(":ok-marketplace-mappers-log1"))
 
                 // Stubs
                 implementation(project(":ok-marketplace-stubs"))
