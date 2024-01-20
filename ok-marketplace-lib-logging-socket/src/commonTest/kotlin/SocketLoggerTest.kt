@@ -7,18 +7,23 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.runTest
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.seconds
+import kotlin.use
 
 class SocketLoggerTest {
     @OptIn(ExperimentalStdlibApi::class)
     @Test
-    fun socketTest() = runTest(timeout = 30.seconds) {
+    fun socketTest() = runTest(timeout = 3.seconds) {
+        val port = Random.nextInt(9000, 12000)
+        val loggerSettings = SocketLoggerSettings(port = port)
         withContext(Dispatchers.Default) {
             // Prepare Server
             val selectorManager = SelectorManager(Dispatchers.IO)
-            launch {
-                aSocket(selectorManager).tcp().bind("127.0.0.1", 9002).use { serverSocket ->
+            val serverJob = launch {
+                aSocket(selectorManager).tcp().bind("127.0.0.1", port).use { serverSocket ->
+                    // Ожидаем 100 лог-сообщений здесь в течение 3 секунд. Иначе ошибка.
                     serverSocket.accept().use { socket ->
                         flow<String> {
                             val receiveChannel = socket.openReadChannel()
@@ -32,28 +37,30 @@ class SocketLoggerTest {
                 }
             }
             // Prepare Logger
-            val logger = mpLoggerSocket("test")
-            // Wait for logger is ready
-            while ((logger as? MpLoggerWrapperSocket)?.isReady?.value != true) {
-                delay(1)
-            }
-            launch {
-                repeat(100) {
-                    println("logging: $it")
-                    logger.info(
-                        msg = "Test message $it",
-                        marker = "TST",
-                        data = object {
-                            @Suppress("unused")
-                            val str: String = "one"
-
-                            @Suppress("unused")
-                            val ival: Int = 2
-                        }
-                    )
+            mpLoggerSocket("test", loggerSettings).use { logger ->
+                // Wait for logger is ready
+                while ((logger as? MpLoggerWrapperSocket)?.isReady?.value != true) {
+                    delay(1)
                 }
-                println("Done!")
+                coroutineScope {
+                    launch {
+                        repeat(100) {
+                            logger.info(
+                                msg = "Test message $it",
+                                marker = "TST",
+                                data = object {
+                                    @Suppress("unused")
+                                    val str: String = "one"
+
+                                    @Suppress("unused")
+                                    val iVal: Int = 2
+                                }
+                            )
+                        }
+                    }
+                }
             }
+            serverJob.cancelAndJoin()
         }
     }
 }

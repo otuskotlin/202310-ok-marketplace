@@ -8,6 +8,7 @@ import ru.otus.otuskotlin.marketplace.logging.kermit.mpLoggerKermit
 actual fun Application.getLoggerProviderConf(): MpLoggerProvider =
     when (val mode = environment.config.propertyOrNull("ktor.logger")?.getString()) {
         "kmp" -> MpLoggerProvider { mpLoggerKermit(it) }
+        "socket", "sock" -> getSocketLoggerProvider()
         "logback", null -> MpLoggerProvider { mpLoggerLogback(it) }
-        else -> throw Exception("Logger $mode is not allowed. Additted values are kmp and logback")
+        else -> throw Exception("Logger $mode is not allowed. Additted values are kmp, socket and logback (default)")
 }

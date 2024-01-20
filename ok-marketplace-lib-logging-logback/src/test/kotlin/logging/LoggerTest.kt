@@ -1,6 +1,7 @@
 package ru.otus.otuskotlin.marketplace.logging
 
 import kotlinx.coroutines.runBlocking
+import org.slf4j.LoggerFactory
 import ru.otus.otuskotlin.marketplace.logging.jvm.mpLoggerLogback
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -9,6 +10,17 @@ import kotlin.test.assertTrue
 
 class LoggerTest {
     private val logId = "test-logger"
+    val lggr = LoggerFactory.getLogger("xx")
+    data class Xx(val x: String = "sdf")
+
+
+    @Test
+    fun slf4jTest() {
+        @Suppress("LoggingPlaceholderCountMatchesArgumentCount")
+        lggr.info("ggg {} {} {}", 1, "sdf", Xx(), Xx("234234"))
+        // ------------это objs - !    !     !
+        // -----------------------------------------это data- !
+    }
 
     @Test
     fun `logger init`() {

@@ -19,7 +19,7 @@ class MpLogWrapperLogback(
      * Идентификатор логера. Пробрасывается в Logback и замещает loggerClass. Также используется в сообщения
      * логера о входе и выходе из функции.
      */
-    override val loggerId: String = "",
+    override val loggerId: String = logger.name,
 ) : IMpLogWrapper {
     /**
      * Основная функция для логирования

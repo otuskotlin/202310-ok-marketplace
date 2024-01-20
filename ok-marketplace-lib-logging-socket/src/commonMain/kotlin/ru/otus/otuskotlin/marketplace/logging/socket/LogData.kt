@@ -7,5 +7,5 @@ import ru.otus.otuskotlin.marketplace.logging.common.LogLevel
 data class LogData(
     val level: LogLevel,
     val message: String,
-//    val data: Map<String,Any>
+//    val data: T
 )

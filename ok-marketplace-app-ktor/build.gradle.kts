@@ -90,6 +90,7 @@ kotlin {
                 implementation(project(":ok-marketplace-mappers-log1"))
                 implementation(project(":ok-marketplace-lib-logging-common"))
                 implementation(project(":ok-marketplace-lib-logging-kermit"))
+                implementation(project(":ok-marketplace-lib-logging-socket"))
             }
         }
 

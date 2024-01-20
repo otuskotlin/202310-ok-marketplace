@@ -24,12 +24,13 @@ class MpLoggerWrapperSocket(
     bufferSize: Int = 16,
     overflowPolicy: BufferOverflow = BufferOverflow.SUSPEND,
     scope: CoroutineScope = CoroutineScope(Dispatchers.Default + CoroutineName("Logging")),
-) : IMpLogWrapper, AutoCloseable {
+) : IMpLogWrapper {
     private val selectorManager = SelectorManager(Dispatchers.IO)
     private val sf = MutableSharedFlow<LogData>(
         extraBufferCapacity = bufferSize,
         onBufferOverflow = overflowPolicy,
     )
+    private val isActive: AtomicBoolean = atomic(true)
     val isReady: AtomicBoolean = atomic(false)
     private val jsonSerializer = Json {
         encodeDefaults = true
@@ -38,16 +39,25 @@ class MpLoggerWrapperSocket(
     private val job = scope.launch { handleLogs() }
 
     private suspend fun handleLogs() {
-        aSocket(selectorManager).tcp().connect(host, port).use { socket ->
-            socket.openWriteChannel().use {
-                sf
-                    .onSubscription { isReady.value = true }
-                    .collect {
-                        val json = jsonSerializer.encodeToString(LogData.serializer(), it)
-                        if (emitToStdout) println(json)
-                        writeStringUtf8(json + "\n")
-                        flush()
+        while (isActive.value) {
+            try {
+
+                aSocket(selectorManager).tcp().connect(host, port).use { socket ->
+                    socket.openWriteChannel().use {
+                        sf
+                            .onSubscription { isReady.value = true }
+                            .collect {
+                                val json = jsonSerializer.encodeToString(LogData.serializer(), it)
+                                if (emitToStdout) println(json)
+                                writeStringUtf8(json + "\n")
+                                flush()
+                            }
                     }
+                }
+            } catch (e: Throwable) {
+                println("Error connecting log socket: $e")
+                e.printStackTrace()
+                delay(300)
             }
         }
     }
@@ -74,6 +84,8 @@ class MpLoggerWrapperSocket(
     }
 
     override fun close() {
+        isActive.value = false
+        isReady.value = false
         job.cancel(message = "Finishing")
     }
 }

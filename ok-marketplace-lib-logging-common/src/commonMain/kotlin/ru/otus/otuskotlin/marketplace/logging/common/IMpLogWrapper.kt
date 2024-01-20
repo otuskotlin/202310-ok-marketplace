@@ -4,8 +4,9 @@ import kotlinx.datetime.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
+@OptIn(ExperimentalStdlibApi::class)
 @Suppress("unused")
-interface IMpLogWrapper {
+interface IMpLogWrapper: AutoCloseable {
     val loggerId: String
 
     fun log(
@@ -84,6 +85,8 @@ interface IMpLogWrapper {
         )
         if (throwRequired) throw e else null
     }
+
+    override fun close() {}
 
     companion object {
         val DEFAULT = object: IMpLogWrapper {

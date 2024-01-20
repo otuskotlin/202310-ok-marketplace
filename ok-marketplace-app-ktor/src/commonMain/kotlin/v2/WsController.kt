@@ -15,7 +15,9 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
 import ru.otus.otuskotlin.marketplace.mappers.v2.fromTransport
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportAd
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportInit
+import kotlin.reflect.KClass
 
+private val clWsV2: KClass<*> = WebSocketSession::wsHandlerV2::class
 suspend fun WebSocketSession.wsHandlerV2(appSettings: MkplAppSettings) = with(KtorWsSessionV2(this)) {
     val sessions = appSettings.corSettings.wsSessions
     sessions.add(this)
@@ -23,7 +25,9 @@ suspend fun WebSocketSession.wsHandlerV2(appSettings: MkplAppSettings) = with(Kt
     // Handle init request
     appSettings.controllerHelper(
         { command = MkplCommand.INIT },
-        { outgoing.send(Frame.Text(apiV2ResponseSerialize(toTransportInit()))) }
+        { outgoing.send(Frame.Text(apiV2ResponseSerialize(toTransportInit()))) },
+        clWsV2,
+        "wsV2-init"
     )
 
     // Handle flow
@@ -37,7 +41,9 @@ suspend fun WebSocketSession.wsHandlerV2(appSettings: MkplAppSettings) = with(Kt
                     val result = apiV2ResponseSerialize(toTransportAd())
                     // If change request, response is sent to everyone
                     outgoing.send(Frame.Text(result))
-                }
+                },
+                clWsV2,
+                "wsV2-handle"
             )
 
         } catch (_: ClosedReceiveChannelException) {
@@ -49,7 +55,9 @@ suspend fun WebSocketSession.wsHandlerV2(appSettings: MkplAppSettings) = with(Kt
         // Handle finish request
         appSettings.controllerHelper(
             { command = MkplCommand.FINISH },
-            { }
+            { },
+            clWsV2,
+            "wsV2-finish"
         )
     }.collect()
 }

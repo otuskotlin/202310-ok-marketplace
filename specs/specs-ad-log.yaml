@@ -43,6 +43,8 @@ components:
             - delete
             - search
             - offers
+            - init
+            - finish
         requestAd:
           $ref: '#/components/schemas/AdLog'
         requestFilter:
