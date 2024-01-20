@@ -9,14 +9,19 @@ import ru.otus.otuskotlin.marketplace.app.common.controllerHelper
 import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.mappers.v2.fromTransport
 import ru.otus.otuskotlin.marketplace.mappers.v2.toTransportAd
+import kotlin.reflect.KClass
 
 suspend inline fun <reified Q : IRequest, @Suppress("unused") reified R : IResponse> ApplicationCall.processV2(
     appSettings: MkplAppSettings,
+    clazz: KClass<*>,
+    logId: String,
 ) = appSettings.controllerHelper(
     {
         fromTransport(receive<Q>())
     },
     {
         respond(toTransportAd())
-    }
+    },
+    clazz,
+    logId
 )

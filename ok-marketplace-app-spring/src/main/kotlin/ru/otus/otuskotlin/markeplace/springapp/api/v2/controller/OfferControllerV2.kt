@@ -17,5 +17,5 @@ class OfferControllerV2(
 
     @PostMapping("offers")
     suspend fun searchOffers(@RequestBody request: AdOffersRequest): AdOffersResponse =
-        processV2(appSettings, request = request)
+        processV2(appSettings, request = request, OfferControllerV2::class, "offers")
 }

@@ -31,7 +31,9 @@ class ControllerV2Test {
     private suspend fun createAdSpring(request: AdCreateRequest): AdCreateResponse =
         appSettings.controllerHelper(
             { fromTransport(request) },
-            { toTransportAd() as AdCreateResponse }
+            { toTransportAd() as AdCreateResponse },
+            ControllerV2Test::class,
+            "controller-v2-test"
         )
 
     class TestApplicationCall(private val request: IRequest) {
@@ -47,7 +49,9 @@ class ControllerV2Test {
     private suspend fun TestApplicationCall.createAdKtor(appSettings: IMkplAppSettings) {
         val resp = appSettings.controllerHelper(
             { fromTransport(receive<AdCreateRequest>()) },
-            { toTransportAd() }
+            { toTransportAd() },
+            ControllerV2Test::class,
+            "controller-v2-test"
         )
         respond(resp)
     }

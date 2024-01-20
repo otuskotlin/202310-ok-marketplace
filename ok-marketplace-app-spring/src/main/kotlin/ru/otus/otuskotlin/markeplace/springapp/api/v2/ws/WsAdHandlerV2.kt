@@ -25,7 +25,9 @@ class WsAdHandlerV2(private val appSettings: MkplAppSettings) : TextWebSocketHan
 
         appSettings.controllerHelper(
             { command = MkplCommand.INIT },
-            { session.send(toTransportInit()) }
+            { session.send(toTransportInit()) },
+            WsAdHandlerV2::class,
+            "ws-v2-init",
         )
     }
 
@@ -36,15 +38,19 @@ class WsAdHandlerV2(private val appSettings: MkplAppSettings) : TextWebSocketHan
                 val request = apiV2Mapper.decodeFromString<IRequest>(message.payload)
                 fromTransport(request)
             },
-            { session.send(toTransportAd()) }
+            { session.send(toTransportAd()) },
+            WsAdHandlerV2::class,
+            "ws-v2-handle",
         )
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus): Unit = runBlocking {
         appSettings.controllerHelper(
             { command = MkplCommand.FINISH },
-            {}
-        )
+            {},
+            WsAdHandlerV2::class,
+            "ws-v2-finish",
+            )
         sessions.remove(SpringWsSessionV2(session))
     }
 }

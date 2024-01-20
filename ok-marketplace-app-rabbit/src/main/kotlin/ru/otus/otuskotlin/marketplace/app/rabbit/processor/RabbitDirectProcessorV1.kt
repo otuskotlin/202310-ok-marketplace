@@ -36,7 +36,9 @@ class RabbitDirectProcessorV1(
                     println("Publishing $response to ${processorConfig.exchange} exchange for keyOut ${processorConfig.keyOut}")
                     basicPublish(processorConfig.exchange, processorConfig.keyOut, null, it)
                 }
-            }
+            },
+            RabbitDirectProcessorV1::class,
+            "rabbitmq-v1-processor"
         )
     }
 

@@ -19,6 +19,7 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
 
                 api("org.jetbrains.kotlinx:kotlinx-datetime:$datetimeVersion")
+                api(project(":ok-marketplace-lib-logging-common"))
             }
         }
         val commonTest by getting {

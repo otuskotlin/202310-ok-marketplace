@@ -15,3 +15,12 @@ ktor:
 #    - "http://127.0.0.1:8080/v1"
 #    - "http://0.0.0.0:8080/v1"
 #    - "http://192.168.0.182:8080/v1"
+
+#  # Логирование типа socket требует установки в fluent-bit.conf
+#  # [INPUT]
+#  # Name    TCP # Вот здесь нужно поменять!
+#  # Listen  0.0.0.0
+#  # Port    24224
+#  logger: socket
+#  socketLogger:
+#    port: 24224

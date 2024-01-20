@@ -44,6 +44,7 @@ dependencies {
 
     // biz
     implementation(project(":ok-marketplace-biz"))
+    implementation(project(":ok-marketplace-lib-logging-logback"))
 
     // tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
