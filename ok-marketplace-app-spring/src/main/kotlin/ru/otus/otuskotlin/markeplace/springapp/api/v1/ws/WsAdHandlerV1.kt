@@ -25,7 +25,9 @@ class WsAdHandlerV1(private val appSettings: MkplAppSettings) : TextWebSocketHan
 
         appSettings.controllerHelper(
             { command = MkplCommand.INIT },
-            { session.send(toTransportInit()) }
+            { session.send(toTransportInit()) },
+            WsAdHandlerV1::class,
+            "ws-v1-init"
         )
     }
 
@@ -36,7 +38,9 @@ class WsAdHandlerV1(private val appSettings: MkplAppSettings) : TextWebSocketHan
                 val request = apiV1Mapper.readValue(message.payload, IRequest::class.java)
                 fromTransport(request)
             },
-            { session.send(toTransportAd()) }
+            { session.send(toTransportAd()) },
+            WsAdHandlerV1::class,
+            "ws-v1-handle"
         )
     }
 
@@ -44,7 +48,9 @@ class WsAdHandlerV1(private val appSettings: MkplAppSettings) : TextWebSocketHan
         val session = SpringWsSessionV1(sess)
         appSettings.controllerHelper(
             { command = MkplCommand.FINISH },
-            {}
+            {},
+            WsAdHandlerV1::class,
+            "ws-v1-finish"
         )
         sessions.remove(session)
     }

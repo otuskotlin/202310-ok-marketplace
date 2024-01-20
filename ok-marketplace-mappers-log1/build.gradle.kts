@@ -12,7 +12,7 @@ kotlin {
         val coroutinesVersion: String by project
         val datetimeVersion: String by project
 
-        all { languageSettings.optIn("kotlin.RequiresOptIn") }
+//        all { languageSettings.optIn("kotlin.RequiresOptIn") }
 
         val commonMain by getting {
             dependencies {
