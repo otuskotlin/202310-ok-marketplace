@@ -3,7 +3,6 @@ package ru.otus.otuskotlin.marketplace.app.ktor.v1
 import io.ktor.server.application.*
 import ru.otus.otuskotlin.marketplace.api.v1.models.*
 import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
-import ru.otus.otuskotlin.marketplace.app.v1.processV1
 import kotlin.reflect.KClass
 
 val clCreate: KClass<*> = ApplicationCall::createAd::class
