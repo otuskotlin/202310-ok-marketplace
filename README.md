@@ -37,5 +37,41 @@ Marketplace -- это площадка, на которой пользовате
 5. [m1l5-coroutines](m1l5-coroutines) - Асинхронное и многопоточное программирование с корутинами
 6. [m1l6-flows](m1l6-flows) - Асинхронное и многопоточное программирование с Flow и каналами
 7. [m1l7-kmp](m1l7-kmp) - Kotlin Multiplatform и интероперабельность с JVM, JS
+8. [m4l4-koform](m4l4-konform) - Демонстрация библиотеки валидации Konform
 
+## Транспортные модели, API
 
+1. [specs](specs) - описание API в форме OpenAPI-спецификаций
+2. [ok-marketplace-api-v1-jackson](ok-marketplace-api-v1-jackson) - Генерация первой версии транспортных модеелй с
+   Jackson
+3. [ok-marketplace-api-v2-kmp](ok-marketplace-api-v2-kmp) - Генерация второй версии транспортных моделей с KMP
+4. [ok-marketplace-api-log1](ok-marketplace-api-log1) - Генерация первой версии моделей логирования
+5. [ok-marketplace-common](ok-marketplace-common) - модуль с общими классами для модулей проекта. В частности, там
+   располагаются внутренние модели и контекст.
+6. [ok-marketplace-mappers-v1](ok-marketplace-mappers-v1) - Мапер между внутренними моделями и моделями API v1
+7. [ok-marketplace-mappers-v2](ok-marketplace-mappers-v2) - Мапер между внутренними моделями и моделями API v2
+8. [ok-marketplace-mappers-log1](ok-marketplace-mappers-log1) - Мапер между внутренними моделями и моделями логирования
+   первой версии
+
+## Фреймворки и транспорты
+
+1. [ok-marketplace-app-spring](ok-marketplace-app-spring) - Приложение на Spring Framework
+2. [ok-marketplace-app-ktor](ok-marketplace-app-ktor) - Приложение на Ktor JVM/Native
+3. [ok-marketplace-app-serverless](ok-marketplace-app-serverless) - Приложение для Yandex.Cloud lambda
+4. [ok-marketplace-app-rabbit](ok-marketplace-app-rabbit) - Микросервис на RabbitMQ
+5. [ok-marketplace-app-kafka](ok-marketplace-app-kafka) - Микросервис на Kafka
+
+## Мониторинг и логирование
+
+1. [deploy](deploy) - Инструменты мониторинга и деплоя
+2. [ok-marketplace-lib-logging-common](ok-marketplace-lib-logging-common) - Общие объявления для логирования
+3. [ok-marketplace-lib-logging-kermit](ok-marketplace-lib-logging-kermit) - Библиотека логирования на базе библиотеки
+   Kermit
+4. [ok-marketplace-lib-logging-logback](ok-marketplace-lib-logging-logback) - Библиотека логирования на базе библиотеки
+   Logback
+
+## Модули бизнес-логики
+
+1. [ok-marketplace-stubs](ok-marketplace-stubs) - Стабы для ответов сервиса
+2. [ok-marketplace-lib-cor](ok-marketplace-lib-cor) - Библиотека цепочки обязанностей для бизнес-логики
+3. [ok-marketplace-biz](ok-marketplace-biz) - Модуль бизнес-логики приложения: обслуживание стабов, валидация, работа с БД
