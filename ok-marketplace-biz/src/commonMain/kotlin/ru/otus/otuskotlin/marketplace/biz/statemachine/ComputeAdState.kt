@@ -18,7 +18,7 @@ fun ICorChainDsl<MkplContext>.computeAdState(title: String) = worker {
     this.description = "Вычисление состояния объявления"
     on { state == MkplState.RUNNING }
     handle {
-        val log = settings.loggerProvider.logger(clazz)
+        val log = corSettings.loggerProvider.logger(clazz)
         val timeNow = Clock.System.now()
         val ad = adValidated
         val prevState = ad.adState
