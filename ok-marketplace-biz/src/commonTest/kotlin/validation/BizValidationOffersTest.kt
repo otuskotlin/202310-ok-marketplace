@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.biz.validation
+package validation
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
@@ -6,9 +6,9 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class BizValidationReadTest {
+class BizValidationOffersTest {
 
-    private val command = MkplCommand.READ
+    private val command = MkplCommand.OFFERS
     private val processor by lazy { MkplAdProcessor() }
 
     @Test fun correctId() = validationIdCorrect(command, processor)
