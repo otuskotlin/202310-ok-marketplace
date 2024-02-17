@@ -25,6 +25,9 @@ Marketplace -- это площадка, на которой пользовате
    2. [Схема мониторинга](./docs/02-devops/02-monitoring.md)
 3. Тесты
 4. Архитектура
+   1. [Компонентная схема](./docs/04-architecture/01-arch.md)
+   2. [Интеграционная схема](./docs/04-architecture/02-integration.md)
+   3. [Описание API](./docs/04-architecture/03-api.md)
 
 # Структура проекта
 
@@ -75,3 +78,14 @@ Marketplace -- это площадка, на которой пользовате
 1. [ok-marketplace-stubs](ok-marketplace-stubs) - Стабы для ответов сервиса
 2. [ok-marketplace-lib-cor](ok-marketplace-lib-cor) - Библиотека цепочки обязанностей для бизнес-логики
 3. [ok-marketplace-biz](ok-marketplace-biz) - Модуль бизнес-логики приложения: обслуживание стабов, валидация, работа с БД
+
+# (## Хранение, репозитории, базы данных)
+
+1. [ok-marketplace-repo-tests](ok-marketplace-repo-tests) - Базовые тесты для репозиториев всех баз данных
+2. [ok-marketplace-repo-in-memory](ok-marketplace-repo-in-memory) - Репозиторий на базе кэша в памяти для тестирования
+
+[//]: # (3. [ok-marketplace-repo-postgresql]&#40;ok-marketplace-repo-postgresql&#41; - Репозиторий на базе PostgreSQL)
+
+[//]: # (4. [ok-marketplace-repo-cassandra]&#40;ok-marketplace-repo-cassandra&#41; - Репозиторий на базе Cassandra)
+
+[//]: # (5. [ok-marketplace-repo-gremlin]&#40;ok-marketplace-repo-gremlin&#41; - Репозиторий на базе Apache TinkerPop Gremlin и ArcadeDb)

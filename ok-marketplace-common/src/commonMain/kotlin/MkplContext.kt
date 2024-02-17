@@ -2,6 +2,7 @@ package ru.otus.otuskotlin.marketplace.common
 
 import kotlinx.datetime.Instant
 import ru.otus.otuskotlin.marketplace.common.models.*
+import ru.otus.otuskotlin.marketplace.common.repo.IAdRepository
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 import ru.otus.otuskotlin.marketplace.common.ws.IMkplWsSession
 
@@ -13,6 +14,12 @@ data class MkplContext(
 
     var workMode: MkplWorkMode = MkplWorkMode.PROD,
     var stubCase: MkplStubs = MkplStubs.NONE,
+
+    var adRepo: IAdRepository = IAdRepository.NONE,
+    var adRepoRead: MkplAd = MkplAd(), // То, что прочитали из репозитория
+    var adRepoPrepare: MkplAd = MkplAd(), // То, что готовим для сохранения в БД
+    var adRepoDone: MkplAd = MkplAd(),  // Результат, полученный из БД
+    var adsRepoDone: MutableList<MkplAd> = mutableListOf(),
 
     var requestId: MkplRequestId = MkplRequestId.NONE,
     var timeStart: Instant = Instant.NONE,

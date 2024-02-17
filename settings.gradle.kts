@@ -39,7 +39,7 @@ pluginManagement {
 //include("m1l6-flows")
 //include("m1l7-kmp")
 //include("m2l3-testing")
-include("m4l4-konform")
+//include("m4l4-konform")
 
 include("ok-marketplace-acceptance")
 
@@ -68,3 +68,7 @@ include("ok-marketplace-lib-logging-common")
 include("ok-marketplace-lib-logging-kermit")
 include("ok-marketplace-lib-logging-logback")
 include("ok-marketplace-lib-logging-socket")
+
+include("ok-marketplace-repo-in-memory")
+include("ok-marketplace-repo-stubs")
+include("ok-marketplace-repo-tests")
