@@ -1,6 +1,5 @@
 package ru.otus.otuskotlin.marketplace.biz.validation
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplContext
@@ -9,7 +8,6 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 fun validationIdCorrect(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
@@ -21,6 +19,7 @@ fun validationIdCorrect(command: MkplCommand, processor: MkplAdProcessor) = runT
             description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
+            lock = MkplAdLock("123-234-abc-ABC"),
         ),
     )
     processor.exec(ctx)
@@ -28,7 +27,6 @@ fun validationIdCorrect(command: MkplCommand, processor: MkplAdProcessor) = runT
     assertNotEquals(MkplState.FAILING, ctx.state)
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 fun validationIdTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
@@ -40,6 +38,7 @@ fun validationIdTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest
             description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
+            lock = MkplAdLock("123-234-abc-ABC"),
         ),
     )
     processor.exec(ctx)
@@ -47,7 +46,6 @@ fun validationIdTrim(command: MkplCommand, processor: MkplAdProcessor) = runTest
     assertNotEquals(MkplState.FAILING, ctx.state)
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 fun validationIdEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
@@ -59,6 +57,7 @@ fun validationIdEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTes
             description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
+            lock = MkplAdLock("123-234-abc-ABC"),
         ),
     )
     processor.exec(ctx)
@@ -69,7 +68,6 @@ fun validationIdEmpty(command: MkplCommand, processor: MkplAdProcessor) = runTes
     assertContains(error?.message ?: "", "id")
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 fun validationIdFormat(command: MkplCommand, processor: MkplAdProcessor) = runTest {
     val ctx = MkplContext(
         command = command,
@@ -81,6 +79,7 @@ fun validationIdFormat(command: MkplCommand, processor: MkplAdProcessor) = runTe
             description = "abc",
             adType = MkplDealSide.DEMAND,
             visibility = MkplVisibility.VISIBLE_PUBLIC,
+            lock = MkplAdLock("123-234-abc-ABC"),
         ),
     )
     processor.exec(ctx)
