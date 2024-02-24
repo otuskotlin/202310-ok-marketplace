@@ -13,7 +13,7 @@ dependencies {
     val jacksonVersion: String by project
     val logbackVersion: String by project
     val coroutinesVersion: String by project
-    val testcontainersVersion: String by project
+    val testContainersVersion: String by project
 
     implementation(kotlin("stdlib"))
     implementation("com.rabbitmq:amqp-client:$rabbitVersion")
@@ -35,6 +35,6 @@ dependencies {
     implementation(project(":ok-marketplace-biz"))
     implementation(project(":ok-marketplace-stubs"))
 
-    testImplementation("org.testcontainers:rabbitmq:$testcontainersVersion")
+    testImplementation("org.testcontainers:rabbitmq:$testContainersVersion")
     testImplementation(kotlin("test"))
 }

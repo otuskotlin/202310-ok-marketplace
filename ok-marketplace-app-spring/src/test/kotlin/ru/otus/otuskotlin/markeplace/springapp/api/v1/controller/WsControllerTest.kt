@@ -4,11 +4,13 @@ import jakarta.websocket.*
 import kotlinx.coroutines.*
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.server.LocalServerPort
 import ru.otus.otuskotlin.marketplace.api.v1.apiV1Mapper
 import ru.otus.otuskotlin.marketplace.api.v1.models.AdInitResponse
 import ru.otus.otuskotlin.marketplace.api.v1.models.IResponse
 import ru.otus.otuskotlin.marketplace.api.v1.models.ResponseResult
+import ru.otus.otuskotlin.marketplace.backend.repo.sql.RepoAdSQL
 import java.net.URI
 import kotlin.test.Test
 
@@ -19,6 +21,10 @@ class WsControllerTest {
 
     @LocalServerPort
     private var port: Int = 0
+
+    @Suppress("unused")
+    @MockBean
+    private lateinit var repo: RepoAdSQL
 
     private lateinit var container: WebSocketContainer
     private lateinit var client: TestWebSocketClient
