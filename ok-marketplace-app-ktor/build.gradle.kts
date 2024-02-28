@@ -130,6 +130,7 @@ kotlin {
                 implementation(project(":ok-marketplace-lib-logging-logback"))
 
                 implementation(project(":ok-marketplace-repo-postgresql"))
+                implementation(project(":ok-marketplace-repo-cassandra"))
             }
         }
 

@@ -24,3 +24,21 @@ ktor:
 #  logger: socket
 #  socketLogger:
 #    port: 24224
+
+marketplace:
+  repository:
+    test: inmemory
+    prod: inmemory
+    # prod: cassandra
+    # prod: psql
+    cassandra:
+      hosts: localhost
+      keyspace: test_keyspace
+      pass: cassandra
+      port: 9042
+      user: cassandra
+    psql:
+      password: marketplace-pass
+      schema: marketplace
+      url: jdbc:postgresql://localhost:5432/marketplace
+      user: postgres
