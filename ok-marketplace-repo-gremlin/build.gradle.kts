@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm")
 }
 
-val generatedPath = layout.buildDirectory.dir("generated/main/kotlin")
+val generatedPath = layout.buildDirectory.dir("generated/main/kotlin").get()
 sourceSets {
     main {
         java.srcDir(generatedPath)
