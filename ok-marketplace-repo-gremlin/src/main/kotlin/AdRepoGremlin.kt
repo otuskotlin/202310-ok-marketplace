@@ -14,13 +14,11 @@ import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.FIELD_TITLE
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.FIELD_TMP_RESULT
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdGremlinConst.RESULT_LOCK_FAILURE
-import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.exceptions.DbDuplicatedElementsException
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.mappers.addMkplAd
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.mappers.label
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.mappers.listMkplAd
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.mappers.toMkplAd
 import ru.otus.otuskotlin.marketplace.common.helpers.asMkplError
-import ru.otus.otuskotlin.marketplace.common.helpers.errorAdministration
 import ru.otus.otuskotlin.marketplace.common.helpers.errorRepoConcurrency
 import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.repo.*
@@ -66,56 +64,26 @@ class AdRepoGremlin(
 
     override suspend fun createAd(rq: DbAdRequest): DbAdResponse {
         val key = randomUuid()
-        val ad = rq.ad.copy(id = MkplAdId(key), lock = MkplAdLock(randomUuid()))
-        val dbRes = try {
+        val ad = rq.ad.copy(lock = MkplAdLock(randomUuid()))
+        val dbRes: Map<String, Any?>? = try {
             g.addV(ad.label())
                 .addMkplAd(ad)
                 .listMkplAd()
-                .toList()
+                .next()
         } catch (e: Throwable) {
-            if (e is ResponseException || e.cause is ResponseException) {
-                return resultErrorNotFound(key)
-            }
-            return DbAdResponse(
-                data = null,
-                isSuccess = false,
-                errors = listOf(e.asMkplError())
-            )
+            return null.prepareResult(key = key, e = e)
         }
-        return when (dbRes.size) {
-            0 -> resultErrorNotFound(key)
-            1 -> DbAdResponse(
-                data = dbRes.first().toMkplAd(),
-                isSuccess = true,
-            )
-
-            else -> errorDuplication(key)
-        }
+        return dbRes.prepareResult(key)
     }
 
     override suspend fun readAd(rq: DbAdIdRequest): DbAdResponse {
         val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
-        val dbRes = try {
-            g.V(key).listMkplAd().toList()
+        val dbRes: Map<String, Any?>? = try {
+            g.V(key).listMkplAd().next()
         } catch (e: Throwable) {
-            if (e is ResponseException || e.cause is ResponseException) {
-                return resultErrorNotFound(key)
-            }
-            return DbAdResponse(
-                data = null,
-                isSuccess = false,
-                errors = listOf(e.asMkplError())
-            )
+            return null.prepareResult(key = key, e = e)
         }
-        return when (dbRes.size) {
-            0 -> resultErrorNotFound(key)
-            1 -> DbAdResponse(
-                data = dbRes.first().toMkplAd(),
-                isSuccess = true,
-            )
-
-            else -> errorDuplication(key)
-        }
+        return dbRes.prepareResult(key)
     }
 
     override suspend fun updateAd(rq: DbAdRequest): DbAdResponse {
@@ -123,7 +91,7 @@ class AdRepoGremlin(
         val oldLock = rq.ad.lock.takeIf { it != MkplAdLock.NONE } ?: return resultErrorEmptyLock
         val newLock = MkplAdLock(randomUuid())
         val newAd = rq.ad.copy(lock = newLock)
-        val dbRes = try {
+        val dbRes: Map<String, Any?>? = try {
             g
                 .V(key)
                 .`as`("a")
@@ -134,43 +102,17 @@ class AdRepoGremlin(
                     gr.select<Vertex, Vertex>("a").addMkplAd(newAd).listMkplAd(),
                     gr.select<Vertex, Vertex>("a").listMkplAd(result = RESULT_LOCK_FAILURE)
                 )
-                .toList()
+                .next()
         } catch (e: Throwable) {
-            if (e is ResponseException || e.cause is ResponseException) {
-                return resultErrorNotFound(key)
-            }
-            return DbAdResponse(
-                data = null,
-                isSuccess = false,
-                errors = listOf(e.asMkplError())
-            )
+            return null.prepareResult(key = key, e = e)
         }
-        val adResult = dbRes.firstOrNull()?.toMkplAd()
-        return when {
-            adResult == null -> resultErrorNotFound(key)
-            dbRes.size > 1 -> errorDuplication(key)
-            adResult.lock != newLock -> DbAdResponse(
-                data = adResult,
-                isSuccess = false,
-                errors = listOf(
-                    errorRepoConcurrency(
-                        expectedLock = oldLock,
-                        actualLock = adResult.lock,
-                    ),
-                )
-            )
-
-            else -> DbAdResponse(
-                data = adResult,
-                isSuccess = true,
-            )
-        }
+        return dbRes.prepareResult(key, oldLock)
     }
 
     override suspend fun deleteAd(rq: DbAdIdRequest): DbAdResponse {
         val key = rq.id.takeIf { it != MkplAdId.NONE }?.asString() ?: return resultErrorEmptyId
         val oldLock = rq.lock.takeIf { it != MkplAdLock.NONE } ?: return resultErrorEmptyLock
-        val dbRes = try {
+        val dbRes: Map<String, Any?>? = try {
             g
                 .V(key)
                 .`as`("a")
@@ -184,38 +126,11 @@ class AdRepoGremlin(
                     gr.select<Vertex, Vertex>("a")
                         .listMkplAd(result = RESULT_LOCK_FAILURE)
                 )
-                .toList()
+                .next()
         } catch (e: Throwable) {
-            if (e is ResponseException || e.cause is ResponseException) {
-                return resultErrorNotFound(key)
-            }
-            return DbAdResponse(
-                data = null,
-                isSuccess = false,
-                errors = listOf(e.asMkplError())
-            )
+            return null.prepareResult(key = key, e = e)
         }
-        val dbFirst = dbRes.firstOrNull()
-        val adResult = dbFirst?.toMkplAd()
-        return when {
-            adResult == null -> resultErrorNotFound(key)
-            dbRes.size > 1 -> errorDuplication(key)
-            dbFirst[FIELD_TMP_RESULT] == RESULT_LOCK_FAILURE -> DbAdResponse(
-                data = adResult,
-                isSuccess = false,
-                errors = listOf(
-                    errorRepoConcurrency(
-                        expectedLock = oldLock,
-                        actualLock = adResult.lock,
-                    ),
-                )
-            )
-
-            else -> DbAdResponse(
-                data = adResult,
-                isSuccess = true,
-            )
-        }
+        return dbRes.prepareResult(key, oldLock)
     }
 
     /**
@@ -246,7 +161,7 @@ class AdRepoGremlin(
     }
 
     companion object {
-        val resultErrorEmptyId = DbAdResponse(
+        private val resultErrorEmptyId = DbAdResponse(
             data = null,
             isSuccess = false,
             errors = listOf(
@@ -256,7 +171,7 @@ class AdRepoGremlin(
                 )
             )
         )
-        val resultErrorEmptyLock = DbAdResponse(
+        private val resultErrorEmptyLock = DbAdResponse(
             data = null,
             isSuccess = false,
             errors = listOf(
@@ -267,29 +182,41 @@ class AdRepoGremlin(
             )
         )
 
-        fun resultErrorNotFound(key: String, e: Throwable? = null) = DbAdResponse(
-            isSuccess = false,
-            data = null,
-            errors = listOf(
-                MkplError(
-                    code = "not-found",
-                    field = "id",
-                    message = "Not Found object with key $key",
-                    exception = e
+        private fun Map<String, Any?>?.prepareResult(key: String, oldLock: MkplAdLock = MkplAdLock.NONE, e: Throwable? = null): DbAdResponse {
+            val adResult = this?.toMkplAd()
+            return when {
+                e is ResponseException || e?.cause is ResponseException || adResult == null -> DbAdResponse(
+                    isSuccess = false,
+                    data = null,
+                    errors = listOf(
+                        MkplError(
+                            code = "not-found",
+                            field = "id",
+                            message = "Not Found object with key $key",
+                            exception = e
+                        )
+                    )
                 )
-            )
-        )
-
-        fun errorDuplication(key: String) = DbAdResponse(
-            data = null,
-            isSuccess = false,
-            errors = listOf(
-                errorAdministration(
-                    violationCode = "duplicateObjects",
-                    description = "Database consistency failure",
-                    exception = DbDuplicatedElementsException("Db contains multiple elements for id = '$key'")
+                e != null -> DbAdResponse(
+                    data = null,
+                    isSuccess = false,
+                    errors = listOf(e.asMkplError())
                 )
-            )
-        )
+                this?.get(FIELD_TMP_RESULT) == RESULT_LOCK_FAILURE -> DbAdResponse(
+                    data = adResult,
+                    isSuccess = false,
+                    errors = listOf(
+                        errorRepoConcurrency(
+                            expectedLock = oldLock,
+                            actualLock = adResult.lock,
+                        ),
+                    )
+                )
+                else -> DbAdResponse(
+                    data = adResult,
+                    isSuccess = true,
+                )
+            }
+        }
     }
 }

@@ -21,7 +21,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.`__` as bs
 class TmpTest {
 
     @Test
-    fun z() {
+    fun addVertex() {
 //        val db = RemoteDatabase("localhost", 2480, "mkpl", "root", "root_root").use {
 //            val z = db.command("gremlin", "g.V()")
 //            println("ZZL: ${z.stream().map { it.toJSON() }.asSequence().joinToString("\n")}")
@@ -54,7 +54,7 @@ class TmpTest {
 
     @Test
     @Ignore
-    fun y() {
+    fun getVertex() {
         val host = "localhost"
         val port = 8182
         val cluster = Cluster.build().apply {
@@ -64,17 +64,20 @@ class TmpTest {
 //            path("/mkpl")
 //            enableSsl(enableSsl)
         }.create()
-        val g = traversal()
-            .withRemote(DriverRemoteConnection.using(cluster))
-        val x = g.V().hasLabel("Test").`as`("a")
-            .project<Any?>("lock", "ownerId", "z")
-            .by("lock")
-            .by(bs.inE("Owns").outV().id())
-            .by(bs.elementMap<Vertex, Map<Any?, Any?>>())
-            .toList()
+        traversal()
+            .withRemote(DriverRemoteConnection.using(cluster)).use { g ->
+                val x = g.V().hasLabel("Test")
+                    .toList()
+                println("CONTENT: ${x}")
 
-        println("CONTENT: ${x}")
-        g.close()
+                val y = g.V().hasLabel("Test").`as`("a")
+                    .project<Any?>("lock", "ownerId", "z")
+                    .by("lock")
+                    .by(bs.inE("Owns").outV().id())
+                    .by(bs.elementMap<Vertex, Map<Any?, Any?>>())
+                    .toList()
+                println("CONTENT: ${y}")
+            }
     }
 
     @Test
