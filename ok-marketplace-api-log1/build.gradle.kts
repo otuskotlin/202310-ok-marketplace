@@ -83,7 +83,7 @@ openApiGenerate {
 tasks {
     val openApiGenerateTask: GenerateTask = getByName("openApiGenerate", GenerateTask::class) {
         outputDir.set(layout.buildDirectory.file("generate-resources").get().toString())
-        mustRunAfter("compileCommonMainKotlinMetadata")
+        finalizedBy("compileCommonMainKotlinMetadata")
     }
     filter { it.name.startsWith("compile") }.forEach {
         it.dependsOn(openApiGenerateTask)
