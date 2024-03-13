@@ -14,7 +14,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import org.slf4j.event.Level
 import ru.otus.otuskotlin.marketplace.api.v1.apiV1Mapper
-import ru.otus.otuskotlin.marketplace.app.base.resolveAlgorithm
+import ru.otus.otuskotlin.marketplace.app.ktor.base.resolveAlgorithm
 import ru.otus.otuskotlin.marketplace.app.common.AuthConfig.Companion.GROUPS_CLAIM
 import ru.otus.otuskotlin.marketplace.app.ktor.v1.v1Ad
 import ru.otus.otuskotlin.marketplace.app.ktor.v1.wsHandlerV1

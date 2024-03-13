@@ -7,7 +7,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import ru.otus.otuskotlin.marketplace.api.v1.models.IRequest
 import ru.otus.otuskotlin.marketplace.api.v1.models.IResponse
-import ru.otus.otuskotlin.marketplace.app.base.toModel
+import ru.otus.otuskotlin.marketplace.app.ktor.base.toModel
 import ru.otus.otuskotlin.marketplace.app.common.controllerHelper
 import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.mappers.v1.fromTransport

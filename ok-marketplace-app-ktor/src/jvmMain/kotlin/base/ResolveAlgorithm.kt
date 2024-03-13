@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.app.base
+package ru.otus.otuskotlin.marketplace.app.ktor.base
 
 import com.auth0.jwk.Jwk
 import com.auth0.jwk.UrlJwkProvider

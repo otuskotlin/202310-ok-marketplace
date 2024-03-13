@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.app.base
+package ru.otus.otuskotlin.marketplace.app.ktor.base
 
 import io.ktor.server.auth.jwt.*
 import ru.otus.otuskotlin.marketplace.app.common.AuthConfig.Companion.F_NAME_CLAIM
