@@ -8,7 +8,6 @@ import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoStub
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 
-
 fun Application.initAppSettings(): MkplAppSettings {
     return MkplAppSettings(
         appUrls = environment.config.propertyOrNull("ktor.urls")?.getList() ?: emptyList(),
