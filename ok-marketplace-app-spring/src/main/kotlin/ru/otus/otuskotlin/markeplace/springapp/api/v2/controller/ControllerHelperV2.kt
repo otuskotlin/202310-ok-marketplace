@@ -1,5 +1,6 @@
 package ru.otus.otuskotlin.markeplace.springapp.api.v2.controller
 
+import ru.otus.otuskotlin.markeplace.springapp.fakeMkplPrincipal
 import ru.otus.otuskotlin.markeplace.springapp.models.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.api.v2.models.IRequest
 import ru.otus.otuskotlin.marketplace.api.v2.models.IResponse
@@ -14,7 +15,10 @@ suspend inline fun <reified Q : IRequest, reified R : IResponse> processV2(
     clazz: KClass<*>,
     logId: String,
 ): R = appSettings.controllerHelper(
-    { fromTransport(request) },
+    {
+        fromTransport(request)
+        principal = fakeMkplPrincipal()
+    },
     { toTransportAd() as R },
     clazz,
     logId

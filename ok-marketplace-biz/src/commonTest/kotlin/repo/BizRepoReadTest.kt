@@ -1,10 +1,10 @@
 package ru.otus.otuskotlin.marketplace.biz.repo
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import repo.repoNotFoundTest
 import ru.otus.otuskotlin.marketplace.backend.repo.tests.AdRepositoryMock
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.biz.addTestPrincipal
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import ru.otus.otuskotlin.marketplace.common.models.*
@@ -39,7 +39,6 @@ class BizRepoReadTest {
     }
     private val processor by lazy { MkplAdProcessor(settings) }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun repoReadSuccessTest() = runTest {
         val ctx = MkplContext(
@@ -50,6 +49,7 @@ class BizRepoReadTest {
                 id = MkplAdId("123"),
             ),
         )
+        ctx.addTestPrincipal()
         processor.exec(ctx)
         assertEquals(MkplState.FINISHING, ctx.state)
         assertEquals(initAd.id, ctx.adResponse.id)
@@ -59,7 +59,6 @@ class BizRepoReadTest {
         assertEquals(initAd.visibility, ctx.adResponse.visibility)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun repoReadNotFoundTest() = repoNotFoundTest(command)
 }

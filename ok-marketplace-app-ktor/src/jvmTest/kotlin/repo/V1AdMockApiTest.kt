@@ -12,6 +12,8 @@ import org.junit.Test
 import ru.otus.otuskotlin.marketplace.api.v1.models.*
 import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.ktor.moduleJvm
+import ru.otus.otuskotlin.marketplace.app.ktor.auth.addAuth
+import ru.otus.otuskotlin.marketplace.app.common.AuthConfig
 import ru.otus.otuskotlin.marketplace.backend.repo.tests.AdRepositoryMock
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import ru.otus.otuskotlin.marketplace.common.models.MkplAd
@@ -58,6 +60,7 @@ class V1AdMockApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdCreateResponse
@@ -96,6 +99,7 @@ class V1AdMockApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdReadResponse
@@ -152,6 +156,7 @@ class V1AdMockApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdUpdateResponse
@@ -205,6 +210,7 @@ class V1AdMockApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdDeleteResponse
@@ -243,6 +249,7 @@ class V1AdMockApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdSearchResponse
@@ -294,6 +301,7 @@ class V1AdMockApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<IResponse>() as AdOffersResponse

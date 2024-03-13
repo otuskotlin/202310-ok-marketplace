@@ -1,9 +1,9 @@
 package repo
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import ru.otus.otuskotlin.marketplace.backend.repo.tests.AdRepositoryMock
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.biz.addTestPrincipal
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import ru.otus.otuskotlin.marketplace.common.models.*
@@ -18,19 +18,19 @@ private val initAd = MkplAd(
     visibility = MkplVisibility.VISIBLE_PUBLIC,
 )
 private val repo = AdRepositoryMock(
-        invokeReadAd = {
-            if (it.id == initAd.id) {
-                DbAdResponse(
-                    isSuccess = true,
-                    data = initAd,
-                )
-            } else DbAdResponse(
-                isSuccess = false,
-                data = null,
-                errors = listOf(MkplError(message = "Not found", field = "id"))
+    invokeReadAd = {
+        if (it.id == initAd.id) {
+            DbAdResponse(
+                isSuccess = true,
+                data = initAd,
             )
-        }
-    )
+        } else DbAdResponse(
+            isSuccess = false,
+            data = null,
+            errors = listOf(MkplError(message = "Not found", field = "id"))
+        )
+    }
+)
 private val settings by lazy {
     MkplCorSettings(
         repoTest = repo
@@ -38,7 +38,6 @@ private val settings by lazy {
 }
 private val processor by lazy { MkplAdProcessor(settings) }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 fun repoNotFoundTest(command: MkplCommand) = runTest {
     val ctx = MkplContext(
         command = command,
@@ -53,6 +52,7 @@ fun repoNotFoundTest(command: MkplCommand) = runTest {
             lock = MkplAdLock("123-234-abc-ABC"),
         ),
     )
+    ctx.addTestPrincipal()
     processor.exec(ctx)
     assertEquals(MkplState.FAILING, ctx.state)
     assertEquals(MkplAd(), ctx.adResponse)

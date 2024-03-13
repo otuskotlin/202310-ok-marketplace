@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import ru.otus.otuskotlin.markeplace.springapp.base.SpringWsSessionRepo
 import ru.otus.otuskotlin.markeplace.springapp.models.MkplAppSettings
+import ru.otus.otuskotlin.marketplace.app.common.AuthConfig
 import ru.otus.otuskotlin.marketplace.backend.repo.sql.RepoAdSQL
 import ru.otus.otuskotlin.marketplace.backend.repo.sql.SqlProperties
 import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoStub
@@ -25,6 +26,9 @@ class CorConfig {
 
     @Bean
     fun loggerProvider(): MpLoggerProvider = MpLoggerProvider { mpLoggerLogback(it) }
+
+    @Bean
+    fun appAuth(): AuthConfig = AuthConfig.NONE
 
     @Bean
     fun prodRepository(props: SqlPropertiesEx) = RepoAdSQL(SqlProperties(
@@ -55,9 +59,14 @@ class CorConfig {
     )
 
     @Bean
-    fun appSettings(corSettings: MkplCorSettings, processor: MkplAdProcessor) = MkplAppSettings(
+    fun appSettings(
+        corSettings: MkplCorSettings,
+        processor: MkplAdProcessor,
+        auth: AuthConfig,
+    ) = MkplAppSettings(
         corSettings = corSettings,
         processor = processor,
+        auth = auth,
     )
 
     @Bean

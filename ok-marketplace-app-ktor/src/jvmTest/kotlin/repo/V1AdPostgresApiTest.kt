@@ -15,6 +15,8 @@ import ru.otus.otuskotlin.marketplace.api.v1.models.*
 import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.ktor.moduleJvm
 import ru.otus.otuskotlin.marketplace.app.ktor.repo.SqlTestCompanion.repoUnderTestContainer
+import ru.otus.otuskotlin.marketplace.app.ktor.auth.addAuth
+import ru.otus.otuskotlin.marketplace.app.common.AuthConfig
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdId
 import ru.otus.otuskotlin.marketplace.common.models.MkplAdLock
@@ -43,6 +45,8 @@ class V1AdPostgresApiTest {
         adType = MkplDealSide.SUPPLY
         visibility = MkplVisibility.VISIBLE_PUBLIC
     }
+
+    private val userId = initAd.ownerId
 
     companion object {
         @BeforeClass
@@ -83,6 +87,7 @@ class V1AdPostgresApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdCreateResponse>()
@@ -112,6 +117,7 @@ class V1AdPostgresApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdReadResponse>()
@@ -146,6 +152,7 @@ class V1AdPostgresApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdUpdateResponse>()
@@ -178,6 +185,7 @@ class V1AdPostgresApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdDeleteResponse>()
@@ -203,6 +211,7 @@ class V1AdPostgresApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdSearchResponse>()
@@ -231,6 +240,7 @@ class V1AdPostgresApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdOffersResponse>()

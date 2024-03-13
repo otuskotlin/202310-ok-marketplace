@@ -56,6 +56,10 @@ dependencies {
 
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    // auth
+    implementation(project(":ok-marketplace-auth"))
+
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux") // Controller, Service, etc..
     testImplementation("javax.websocket:javax.websocket-api:1.1")
 }

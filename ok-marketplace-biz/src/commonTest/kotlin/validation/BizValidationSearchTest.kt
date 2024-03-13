@@ -5,7 +5,10 @@ import ru.otus.otuskotlin.marketplace.backend.repository.inmemory.AdRepoStub
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
-import ru.otus.otuskotlin.marketplace.common.models.*
+import ru.otus.otuskotlin.marketplace.common.models.MkplAdFilter
+import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
+import ru.otus.otuskotlin.marketplace.common.models.MkplState
+import ru.otus.otuskotlin.marketplace.common.models.MkplWorkMode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -33,4 +36,3 @@ class BizValidationSearchTest {
         assertNotEquals(MkplState.FAILING, ctx.state)
     }
 }
-

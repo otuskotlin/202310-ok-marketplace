@@ -19,6 +19,8 @@ import ru.otus.otuskotlin.marketplace.api.v1.models.*
 import ru.otus.otuskotlin.marketplace.app.ktor.MkplAppSettings
 import ru.otus.otuskotlin.marketplace.app.ktor.moduleJvm
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.ARCADEDB_VERSION
+import ru.otus.otuskotlin.marketplace.app.ktor.auth.addAuth
+import ru.otus.otuskotlin.marketplace.app.common.AuthConfig
 import ru.otus.otuskotlin.marketplace.backend.repository.gremlin.AdRepoGremlin
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import ru.otus.otuskotlin.marketplace.common.models.*
@@ -54,6 +56,7 @@ class V1AdGremlinApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdCreateResponse>()
@@ -82,6 +85,7 @@ class V1AdGremlinApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdReadResponse>()
@@ -115,6 +119,7 @@ class V1AdGremlinApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdUpdateResponse>()
@@ -145,6 +150,7 @@ class V1AdGremlinApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdDeleteResponse>()
@@ -169,6 +175,7 @@ class V1AdGremlinApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdSearchResponse>()
@@ -195,6 +202,7 @@ class V1AdGremlinApiTest {
                 )
             )
             contentType(ContentType.Application.Json)
+            addAuth(id = userId.asString(), config = AuthConfig.TEST)
             setBody(requestObj)
         }
         val responseObj = response.body<AdOffersResponse>()
@@ -285,5 +293,7 @@ class V1AdGremlinApiTest {
         private val initAd = repo.initializedObjects.first()
         private val initAdDelete = repo.initializedObjects[1]
         private val initAdSupply = repo.initializedObjects.last()
+
+        private val userId = initAd.ownerId
     }
 }

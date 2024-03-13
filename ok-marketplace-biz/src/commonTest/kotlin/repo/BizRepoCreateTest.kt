@@ -3,6 +3,7 @@ package ru.otus.otuskotlin.marketplace.biz.repo
 import kotlinx.coroutines.test.runTest
 import ru.otus.otuskotlin.marketplace.backend.repo.tests.AdRepositoryMock
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
+import ru.otus.otuskotlin.marketplace.biz.addTestPrincipal
 import ru.otus.otuskotlin.marketplace.common.MkplContext
 import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import ru.otus.otuskotlin.marketplace.common.models.*
@@ -49,6 +50,7 @@ class BizRepoCreateTest {
                 visibility = MkplVisibility.VISIBLE_PUBLIC,
             ),
         )
+        ctx.addTestPrincipal()
         processor.exec(ctx)
         assertEquals(MkplState.FINISHING, ctx.state)
         assertNotEquals(MkplAdId.NONE, ctx.adResponse.id)

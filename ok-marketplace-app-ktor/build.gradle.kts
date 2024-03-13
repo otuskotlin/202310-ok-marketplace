@@ -72,6 +72,8 @@ kotlin {
                 implementation(ktorServer("content-negotiation"))
                 implementation(ktorServer("websockets"))
 
+                implementation(ktorServer("auth"))
+
                 implementation(project(":ok-marketplace-common"))
                 implementation(project(":ok-marketplace-app-common"))
                 implementation(project(":ok-marketplace-biz"))
@@ -108,6 +110,7 @@ kotlin {
                 implementation(ktorServer("test-host"))
                 implementation(ktorClient("content-negotiation"))
                 implementation(ktorClient("websockets"))
+                implementation(ktorClient("auth"))
 
                 implementation(project(":ok-marketplace-repo-tests"))
             }
@@ -121,6 +124,7 @@ kotlin {
                 implementation(ktor("serialization-jackson"))
                 implementation(ktorServer("call-logging"))
                 implementation(ktorServer("default-headers"))
+                implementation(ktorServer("auth-jwt"))
 
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
@@ -147,6 +151,9 @@ kotlin {
 }
 
 tasks {
+    shadowJar {
+        isZip64 = true
+    }
     val linkReleaseExecutableLinuxX64 by getting(KotlinNativeLink::class)
     val nativeFileX64 = linkReleaseExecutableLinuxX64.binary.outputFile
     val linuxX64ProcessResources by getting(ProcessResources::class)
