@@ -24,7 +24,9 @@ data class MkplContext(
     var adsRepoDone: MutableList<MkplAd> = mutableListOf(),
 
     var principal: MkplPrincipalModel = MkplPrincipalModel.NONE,
+    // Набор пермишинов, которые соответствуют группам, полученным из JWT в запросе
     val permissionsChain: MutableSet<MkplUserPermissions> = mutableSetOf(),
+    // Результат вычисления доступа (да/нет)
     var permitted: Boolean = false,
 
     var requestId: MkplRequestId = MkplRequestId.NONE,

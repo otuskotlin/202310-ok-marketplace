@@ -4,6 +4,10 @@ import ru.otus.otuskotlin.marketplace.common.models.MkplCommand
 import ru.otus.otuskotlin.marketplace.common.permissions.MkplPrincipalRelations
 import ru.otus.otuskotlin.marketplace.common.permissions.MkplUserPermissions
 
+/**
+ * Вычисляет доступность выполнения операции.
+ * Здесь происходит сравнение доступных прав (пермишинов) и фактических отношений принципала к объекту, с которым работаем
+ */
 fun checkPermitted(
     command: MkplCommand,
     relations: Iterable<MkplPrincipalRelations>,
@@ -20,6 +24,7 @@ fun checkPermitted(
     }.any {
         accessTable[it] != null
     }
+    // Дополнительно можно сделать проверку на отсутствие в результатах false
 
 private data class AccessTableConditions(
     val command: MkplCommand,

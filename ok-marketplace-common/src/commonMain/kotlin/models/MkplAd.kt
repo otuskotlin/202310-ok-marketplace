@@ -18,7 +18,9 @@ data class MkplAd(
     var visibility: MkplVisibility = MkplVisibility.NONE,
     var productId: MkplProductId = MkplProductId.NONE,
     var lock: MkplAdLock = MkplAdLock.NONE,
+    // Результат вычисления отношений текущего пользователя (который сделал запрос) к текущему объявлению
     var principalRelations: Set<MkplPrincipalRelations> = emptySet(),
+    // Набор пермишинов, которые отдадим во фронтенд
     val permissionsClient: MutableSet<MkplAdPermissionClient> = mutableSetOf()
 ) {
     fun deepCopy(): MkplAd = copy(

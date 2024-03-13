@@ -17,6 +17,9 @@ fun resolveFrontPermissions(
     }
     .toSet()
 
+/**
+ * Это трехмерная таблица пермишин в бэкенде->отношение к объявлению->пермишин на фронте
+ */
 private val accessTable = mapOf(
     // READ
     MkplUserPermissions.READ_OWN to mapOf(

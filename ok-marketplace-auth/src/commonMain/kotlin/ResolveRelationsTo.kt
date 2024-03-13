@@ -8,6 +8,7 @@ import ru.otus.otuskotlin.marketplace.common.permissions.MkplPrincipalRelations
 
 fun MkplAd.resolveRelationsTo(principal: MkplPrincipalModel): Set<MkplPrincipalRelations> = setOfNotNull(
     MkplPrincipalRelations.NONE,
+    // Используется при создании нового объявления
     MkplPrincipalRelations.NEW.takeIf { id == MkplAdId.NONE },
     MkplPrincipalRelations.OWN.takeIf { principal.id == ownerId },
     MkplPrincipalRelations.MODERATABLE.takeIf { visibility != MkplVisibility.VISIBLE_TO_OWNER },
