@@ -1,0 +1,31 @@
+#!/bin/bash
+
+resp=$(
+  curl -X POST \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -d "client_id=otus-marketplace-service&grant_type=password&username=otus-test&password=otus-pass" \
+    http://localhost:8081/auth/realms/otus-marketplace/protocol/openid-connect/token
+)
+
+ACCESS_TOKEN=$(echo $resp | jq -r '.access_token')
+
+#echo $ACCESS_TOKEN
+
+curl -vv -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -d '{
+        "requestType": "create",
+        "requestId": "12345",
+        "ad": {
+          "title": "Болт",
+          "description": "КРУТЕЙШИЙ",
+          "visibility": "public",
+          "adType": "demand"
+        },
+        "debug": {
+          "mode": "test"
+        }
+      }' \
+  http://localhost:8080/v1/ad/create
+

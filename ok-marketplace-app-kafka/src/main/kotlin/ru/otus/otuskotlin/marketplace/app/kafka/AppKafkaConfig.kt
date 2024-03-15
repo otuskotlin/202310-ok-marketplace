@@ -12,8 +12,8 @@ class AppKafkaConfig(
     val kafkaTopicOutV1: String = KAFKA_TOPIC_OUT_V1,
     val kafkaTopicInV2: String = KAFKA_TOPIC_IN_V2,
     val kafkaTopicOutV2: String = KAFKA_TOPIC_OUT_V2,
-    override val processor: MkplAdProcessor = MkplAdProcessor(),
     override val corSettings: MkplCorSettings = MkplCorSettings(),
+    override val processor: MkplAdProcessor = MkplAdProcessor(corSettings),
     override val auth: AuthConfig = AuthConfig.TEST,
 ): IMkplAppSettings {
     companion object {
