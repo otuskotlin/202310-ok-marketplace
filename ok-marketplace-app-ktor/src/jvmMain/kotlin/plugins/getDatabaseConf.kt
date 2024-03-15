@@ -1,4 +1,4 @@
-package ru.otus.otuskotlin.marketplace.app.plugins
+package ru.otus.otuskotlin.marketplace.app.ktor.plugins
 
 import io.ktor.server.application.*
 import ru.otus.otuskotlin.marketplace.app.configs.CassandraConfig

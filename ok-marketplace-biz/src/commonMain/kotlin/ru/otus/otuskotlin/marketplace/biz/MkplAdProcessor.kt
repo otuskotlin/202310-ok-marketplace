@@ -23,8 +23,7 @@ import ru.otus.otuskotlin.marketplace.cor.worker
 import ru.otus.otuskotlin.marketplace.cor.chain
 
 class MkplAdProcessor(
-    @Suppress("unused")
-    private val corSettings: MkplCorSettings = MkplCorSettings.NONE
+    private val corSettings: MkplCorSettings
 ) {
     suspend fun exec(ctx: MkplContext) = BusinessChain.exec(ctx.also { it.corSettings = corSettings })
 

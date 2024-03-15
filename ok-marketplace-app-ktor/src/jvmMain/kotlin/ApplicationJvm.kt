@@ -18,7 +18,7 @@ import ru.otus.otuskotlin.marketplace.app.ktor.base.resolveAlgorithm
 import ru.otus.otuskotlin.marketplace.app.common.AuthConfig.Companion.GROUPS_CLAIM
 import ru.otus.otuskotlin.marketplace.app.ktor.v1.v1Ad
 import ru.otus.otuskotlin.marketplace.app.ktor.v1.wsHandlerV1
-import ru.otus.otuskotlin.marketplace.app.plugins.initAppSettings
+import ru.otus.otuskotlin.marketplace.app.ktor.plugins.initAppSettings
 
 // function with config (application.conf)
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
@@ -41,6 +41,7 @@ fun Application.moduleJvm(
             realm = authConfig.realm
 
             verifier {
+                println("VERIFIER is CREATED")
                 val algorithm = it.resolveAlgorithm(authConfig)
                 JWT.require(algorithm)
                     .withAudience(authConfig.audience)
@@ -48,6 +49,7 @@ fun Application.moduleJvm(
                     .build()
             }
             validate { jwtCredential: JWTCredential ->
+                println("CREDENTIAL IS validating")
                 when {
                     jwtCredential.payload.getClaim(GROUPS_CLAIM).asList(String::class.java).isNullOrEmpty() -> {
                         this@moduleJvm.log.error("Groups claim must not be empty in JWT token")
