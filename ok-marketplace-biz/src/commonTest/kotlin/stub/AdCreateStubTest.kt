@@ -3,6 +3,7 @@ package ru.otus.otuskotlin.marketplace.biz.stub
 import kotlinx.coroutines.test.runTest
 import ru.otus.otuskotlin.marketplace.biz.MkplAdProcessor
 import ru.otus.otuskotlin.marketplace.common.MkplContext
+import ru.otus.otuskotlin.marketplace.common.MkplCorSettings
 import ru.otus.otuskotlin.marketplace.common.models.*
 import ru.otus.otuskotlin.marketplace.common.stubs.MkplStubs
 import ru.otus.otuskotlin.marketplace.stubs.MkplAdStub
@@ -11,7 +12,7 @@ import kotlin.test.assertEquals
 
 class AdCreateStubTest {
 
-    private val processor = MkplAdProcessor()
+    private val processor = MkplAdProcessor(MkplCorSettings.NONE)
     val id = MkplAdId("666")
     val title = "title 666"
     val description = "desc 666"
